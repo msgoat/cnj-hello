@@ -44,5 +44,5 @@ hs_err_pid*
 *.iml
 
 # MAVEN build artifacts
-target/
+**/target/
 

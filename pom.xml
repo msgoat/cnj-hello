@@ -10,12 +10,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-	<modules>
-		<module>cnj-hello-backend-test</module>
-		<module>cnj-hello-backend-spring</module>
-		<module>cnj-hello-backend-javaee</module>
-		<module>cnj-hello-backend-micro</module>
-	</modules>
+    <modules>
+        <module>cnj-hello-backend-test</module>
+        <module>cnj-hello-backend-spring</module>
+        <module>cnj-hello-backend-javaee</module>
+        <module>cnj-hello-backend-micro</module>
+    </modules>
     <distributionManagement>
         <repository>
             <id>at41-maven-repository</id>
