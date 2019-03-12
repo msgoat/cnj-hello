@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-LABEL maintainer="michael.theis@hm.edu" \
+LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="AT.41" \
         ${project.groupId}.${project.artifactId}.version="${project.version}" \
         ${project.groupId}.${project.artifactId}.description="${project.description}"

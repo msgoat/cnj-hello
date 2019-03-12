@@ -1,6 +1,6 @@
 FROM docker.at.automotive.msg.team/msgoat/at41-docker-payara-full:5.184
 
-LABEL maintainer="michael.theis@hm.edu" \
+LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="AT.41" \
         ${project.groupId}.${project.artifactId}.version="${project.version}" \
         ${project.groupId}.${project.artifactId}.description="${project.description}"
