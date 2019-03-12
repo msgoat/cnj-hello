@@ -1,0 +1,23 @@
+# docker-compose.yml
+# ----------------------------------------------------------------------------
+# Composes Docker containers and volumes to a runnable Spring Boot application
+# ----------------------------------------------------------------------------
+#
+---
+version: '3'
+
+services:
+
+  cna-spring-hello:
+    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-spring:latest
+    ports:
+      - "18080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: cloud
+      CNAP_CLOUD: openshift
+
+
+
+
+
+  

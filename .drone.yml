@@ -1,0 +1,13 @@
+pipeline:
+  commit-stage:
+    image: docker.at.automotive.msg.team/msgoat/at41-drone-maven
+    commands:
+      - mvn clean deploy --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage -Dtest.target.route=http://10.118.17.191:18080
+  notification-stage:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: drone
+    when:
+      status: [ success, failure ]
+
+    
