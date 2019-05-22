@@ -195,13 +195,6 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>at41-maven-repository</id>
-            <name>msg Automotive AT Maven Releases Repository</name>
-            <url>https://nexus.at.automotive.msg.team/repository/msgoat-maven-releases/</url>
-        </repository>
-    </distributionManagement>
     <profiles>
         <profile>
             <id>pre-commit-stage</id>
@@ -218,4 +211,11 @@
             </build>
         </profile>
     </profiles>
+    <distributionManagement>
+        <repository>
+            <id>at41-maven-repository</id>
+            <name>msg Automotive AT Maven Releases Repository</name>
+            <url>https://nexus.at.automotive.msg.team/repository/msgoat-maven-releases/</url>
+        </repository>
+    </distributionManagement>
 </project>

@@ -16,4 +16,11 @@
 		<module>cnj-hello-backend-micro</module>
         <module>cnj-hello-backend-spring</module>
 	</modules>
+    <distributionManagement>
+        <repository>
+            <id>at41-maven-repository</id>
+            <name>msg Automotive AT Maven Releases Repository</name>
+            <url>https://nexus.at.automotive.msg.team/repository/msgoat-maven-releases/</url>
+        </repository>
+    </distributionManagement>
 </project>
