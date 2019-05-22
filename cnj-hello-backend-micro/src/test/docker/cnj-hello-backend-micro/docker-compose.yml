@@ -8,8 +8,8 @@ version: '3'
 
 services:
 
-  payara:
-    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-micro:latest
+  backend:
+    image: hmfwpcnj/cnj-hello-backend-micro:latest
     ports:
-      - "18080:8080"
+      - "8080:8080"
       - "4848:4848"

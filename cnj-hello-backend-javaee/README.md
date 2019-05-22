@@ -13,9 +13,7 @@ docker run --name cnj-hello-backend-javaee -p 8080:8080 docker.at.automotive.msg
 
 ## Build this application 
 
-1. Clone the git repo to your local machine.
-1. Change to the repos root folder
-1. Run Maven with activated profile __pre-commit-stage__: 
+See [cnj-hello](../README.md) for build instructions.
 
 ``` 
 mvn clean verify -P pre-commit-stage
