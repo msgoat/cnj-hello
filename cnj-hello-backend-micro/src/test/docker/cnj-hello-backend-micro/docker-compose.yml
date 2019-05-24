@@ -9,7 +9,6 @@ version: '3'
 services:
 
   backend:
-    image: hmfwpcnj/cnj-hello-backend-micro:latest
+    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-micro:latest
     ports:
       - "8080:8080"
-      - "4848:4848"

@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine
 
-LABEL maintainer="michael.theis@hm.edu" \
-        ${project.groupId}.${project.artifactId}.project="HMFWPCNJ" \
+LABEL maintainer="michael.theis@msg.group" \
+        ${project.groupId}.${project.artifactId}.project="AT41" \
         ${project.groupId}.${project.artifactId}.version="${project.version}" \
         ${project.groupId}.${project.artifactId}.description="${project.description}"
 
