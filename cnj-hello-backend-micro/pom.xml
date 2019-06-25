@@ -34,7 +34,7 @@
         <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
         <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
         <maven.payara.micro.plugin.version>1.0.3</maven.payara.micro.plugin.version>
-        <maven.helm.plugin.version>0.7.5</maven.helm.plugin.version>
+        <maven.helm.plugin.version>0.9.0</maven.helm.plugin.version
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
         <revision>1.0.0</revision>
