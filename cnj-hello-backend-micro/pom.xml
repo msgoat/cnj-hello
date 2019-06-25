@@ -762,6 +762,7 @@
                                     <helmChartDirectory>${project.build.directory}/helm-resources/${project.artifactId}</helmChartDirectory>
                                     <helmReleaseName>${project.artifactId}</helmReleaseName>
                                     <helmNamespace>int</helmNamespace>
+                                    <helmTillerNamespace>sys-tiller</helmTillerNamespace>
                                 </configuration>
                             </execution>
                             <execution>
