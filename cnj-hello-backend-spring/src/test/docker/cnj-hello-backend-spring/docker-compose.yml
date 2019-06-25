@@ -9,7 +9,7 @@ version: '3'
 services:
 
   backend:
-    image: hmfwpcnj/cnj-hello-backend-spring:latest
+    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-spring:latest
     ports:
       - "8080:8080"
     environment:
