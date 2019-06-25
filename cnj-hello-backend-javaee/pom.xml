@@ -667,22 +667,6 @@
                                     <skip>true</skip>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>copy-helm-resources</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.basedir}/src/main/helm</directory>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                    <outputDirectory>${project.build.directory}/helm-resources</outputDirectory>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                     <!-- install/upgrade helm release before running tests; delete helm release after running tests -->
@@ -697,7 +681,7 @@
                                     <goal>install</goal>
                                 </goals>
                                 <configuration>
-                                    <helmChartDirectory>${project.build.directory}/helm-resources/${project.artifactId}</helmChartDirectory>
+                                    <helmChartDirectory>src/main/helm/${project.artifactId}</helmChartDirectory>
                                     <helmReleaseName>${project.artifactId}</helmReleaseName>
                                     <helmNamespace>int</helmNamespace>
                                 </configuration>
