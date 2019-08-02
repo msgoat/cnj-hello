@@ -6,21 +6,26 @@
     <artifactId>cnj-hello-backend-spring</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <packaging>jar</packaging>
-    <name>cnj-hello-backend-spring</name>
     <description>Simplest possible cloud native java backend based on Spring Boot / Spring Cloud</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <spring.boot.version>2.1.4.RELEASE</spring.boot.version>
+        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+        <logstash.logback.encoder.version>6.1</logstash.logback.encoder.version>
+        <micrometer.version>1.2.0</micrometer.version>
+        <common.persistence.jpa.version>1.0.2</common.persistence.jpa.version>
         <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
+        <flyway.version>5.2.4</flyway.version>
+        <keycloak.version>4.8.3.Final</keycloak.version>
+        <postgres.jdbc.version>42.2.5</postgres.jdbc.version>
         <maven.docker.plugin.version>0.27.2</maven.docker.plugin.version>
-        <maven.docker.compose.plugin.version>2.2.0</maven.docker.compose.plugin.version>
+        <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
         <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
@@ -32,12 +37,13 @@
         <helm.tillerNamespace>sys-tiller</helm.tillerNamespace>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>1.0.0</revision>
+        <revision>2.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Boot runtime -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -62,18 +68,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- Spring Cloud Connectors for cloud platform integration -->
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cloud-connectors</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>group.msg.at.cloud</groupId>
-            <artifactId>cna-kubernetes-cloud-connector</artifactId>
-            <version>0.8.3</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -99,10 +93,11 @@
                     <artifactId>docker-maven-plugin</artifactId>
                     <version>${maven.docker.plugin.version}</version>
                 </plugin>
+                <!-- Docker Compose Maven plugin to run docker container groups for testing -->
                 <plugin>
-                    <groupId>com.dkanejs.maven.plugins</groupId>
-                    <artifactId>docker-compose-maven-plugin</artifactId>
-                    <version>${maven.docker.compose.plugin.version}</version>
+                    <groupId>group.msg.at.cloud.tools</groupId>
+                    <artifactId>compose-maven-plugin</artifactId>
+                    <version>${maven.compose.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -196,7 +191,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.5,)</version>
+                                    <version>3.5</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${java.version}</version>
@@ -238,7 +233,7 @@
         <profile>
             <id>pre-commit-stage</id>
             <properties>
-                <test.target.route>http://192.168.99.100:8080</test.target.route>
+                <test.target.route>http://192.168.99.100:38080</test.target.route>
             </properties>
             <build>
                 <plugins>
@@ -311,21 +306,19 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>com.dkanejs.maven.plugins</groupId>
-                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <groupId>group.msg.at.cloud.tools</groupId>
+                        <artifactId>compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>start-docker-containers</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>up</goal>
+                                    <goal>upWithLogs</goal>
                                 </goals>
                                 <configuration>
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
-                                    <detachedMode>true</detachedMode>
-                                    <verbose>false</verbose>
                                 </configuration>
                             </execution>
                             <execution>
@@ -545,21 +538,19 @@
                     </plugin>
                     <!-- start docker containers before running tests and stop them after running tests -->
                     <plugin>
-                        <groupId>com.dkanejs.maven.plugins</groupId>
-                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <groupId>group.msg.at.cloud.tools</groupId>
+                        <artifactId>compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>start-docker-containers</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>up</goal>
+                                    <goal>upWithLogs</goal>
                                 </goals>
                                 <configuration>
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
-                                    <detachedMode>true</detachedMode>
-                                    <verbose>false</verbose>
                                 </configuration>
                             </execution>
                             <execution>
@@ -678,12 +669,12 @@
                                 <id>helm-install</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>install</goal>
+                                    <goal>deploy</goal>
                                 </goals>
                                 <configuration>
                                     <helmChartDirectory>src/main/helm/${project.artifactId}</helmChartDirectory>
                                     <helmReleaseName>${project.artifactId}</helmReleaseName>
-                                    <helmNamespace>int</helmNamespace>
+                                    <helmReleaseNamespace>int</helmReleaseNamespace>
                                 </configuration>
                             </execution>
                             <execution>

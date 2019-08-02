@@ -10,8 +10,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+        <javaee.version>8.0</javaee.version>
         <junit.version>5.3.2</junit.version>
-        <payara.version>5.184</payara.version>
+        <payara.version>5.192</payara.version>
         <microprofile.version>2.1</microprofile.version>
         <slf4j.version>1.7.25</slf4j.version>
         <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
@@ -20,8 +21,9 @@
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
+        <postgres.jdbc.version>42.2.6</postgres.jdbc.version>
         <maven.docker.plugin.version>0.27.2</maven.docker.plugin.version>
-        <maven.docker.compose.plugin.version>2.2.0</maven.docker.compose.plugin.version>
+        <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
         <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
@@ -38,7 +40,7 @@
         <helm.tillerNamespace>sys-tiller</helm.tillerNamespace>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>1.0.0</revision>
+        <revision>2.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -48,7 +50,7 @@
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-web-api</artifactId>
-                <version>8.0</version>
+                <version>${javaee.version}</version>
                 <scope>compile</scope>
             </dependency>
             <!-- Payara Micro Profile (to be used as test runtime only!) -->
@@ -133,7 +135,7 @@
         <dependency>
             <groupId>group.msg.at.cloud</groupId>
             <artifactId>cnj-hello-backend-test</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -202,9 +204,9 @@
                 </plugin>
                 <!-- Docker Compose Maven plugin to run docker container groups for testing -->
                 <plugin>
-                    <groupId>com.dkanejs.maven.plugins</groupId>
-                    <artifactId>docker-compose-maven-plugin</artifactId>
-                    <version>${maven.docker.compose.plugin.version}</version>
+                    <groupId>group.msg.at.cloud.tools</groupId>
+                    <artifactId>compose-maven-plugin</artifactId>
+                    <version>${maven.compose.plugin.version}</version>
                 </plugin>
                 <!-- Payara MicroProfile Maven Plugin to package uber JARs from WARs-->
                 <plugin>
@@ -276,12 +278,10 @@
         </plugins>
     </build>
     <profiles>
-        <!-- profile pre-commit-stage representing the local build supposed to be run before committing/pushing to GIT -->
-        <!-- compiles all sources; runs unit tests; builds and tests docker image using system tests -->
         <profile>
             <id>pre-commit-stage</id>
             <properties>
-                <test.target.route>http://192.168.99.100:8080</test.target.route>
+                <test.target.route>http://192.168.99.100:38080</test.target.route>
             </properties>
             <build>
                 <plugins>
@@ -352,7 +352,8 @@
                                         <image>
                                             <name>${docker.image.name}</name>
                                             <build>
-                                                <dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
+                                                <dockerFileDir>${project.build.directory}/docker-resources
+                                                </dockerFileDir>
                                                 <tags>
                                                     <tag>${project.version}</tag>
                                                 </tags>
@@ -364,21 +365,19 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>com.dkanejs.maven.plugins</groupId>
-                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <groupId>group.msg.at.cloud.tools</groupId>
+                        <artifactId>compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>start-docker-containers</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>up</goal>
+                                    <goal>upWithLogs</goal>
                                 </goals>
                                 <configuration>
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
-                                    <detachedMode>true</detachedMode>
-                                    <verbose>false</verbose>
                                 </configuration>
                             </execution>
                             <execution>
@@ -609,21 +608,19 @@
                     </plugin>
                     <!-- start docker containers before running tests and stop them after running tests -->
                     <plugin>
-                        <groupId>com.dkanejs.maven.plugins</groupId>
-                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <groupId>group.msg.at.cloud.tools</groupId>
+                        <artifactId>compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>start-docker-containers</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>up</goal>
+                                    <goal>upWithLogs</goal>
                                 </goals>
                                 <configuration>
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
-                                    <detachedMode>true</detachedMode>
-                                    <verbose>false</verbose>
                                 </configuration>
                             </execution>
                             <execution>
@@ -741,12 +738,13 @@
                                 <id>helm-install</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>install</goal>
+                                    <goal>deploy</goal>
                                 </goals>
                                 <configuration>
                                     <helmChartDirectory>src/main/helm/${project.artifactId}</helmChartDirectory>
                                     <helmReleaseName>${project.artifactId}</helmReleaseName>
-                                    <helmNamespace>int</helmNamespace>
+                                    <helmReleaseNamespace>int</helmReleaseNamespace>
+                                    <debug>true</debug>
                                 </configuration>
                             </execution>
                             <execution>

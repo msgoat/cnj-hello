@@ -24,7 +24,7 @@
         <maven.helm.plugin.version>0.9.0</maven.helm.plugin.version>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>1.0.0</revision>
+        <revision>2.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>

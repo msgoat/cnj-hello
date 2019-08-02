@@ -3,7 +3,7 @@
 if [ "$1" = "start" ]
 then
 	echo "Running Payara Microprofile application ..."
-	java ${JAVA_OPTS} ${DOCKER_JAVA_OPTS} ${PAYARA_JAVA_OPTS} -jar /home/payara/*.jar
+	java ${JAVA_OPTS} ${DOCKER_JAVA_OPTS} ${PAYARA_JAVA_OPTS} -jar /home/payara/*.jar ${PAYARA_ARGUMENTS}
 else 
 	exec "$@"	
 fi

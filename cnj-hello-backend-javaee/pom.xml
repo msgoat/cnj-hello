@@ -10,15 +10,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+        <javaee.version>8.0</javaee.version>
+        <payara.version>5.192</payara.version>
         <junit.version>5.3.2</junit.version>
         <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
-		<docker.organization.name>cloudtrain</docker.organization.name>
-		<docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
+        <docker.organization.name>cloudtrain</docker.organization.name>
+        <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
+        <microprofile.version>2.1</microprofile.version>
+        <postgres.jdbc.version>42.2.6</postgres.jdbc.version>
         <maven.docker.plugin.version>0.27.2</maven.docker.plugin.version>
-        <maven.docker.compose.plugin.version>2.2.0</maven.docker.compose.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
         <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
@@ -32,27 +35,28 @@
         <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
         <maven.helm.plugin.version>0.9.0</maven.helm.plugin.version>
         <helm.tillerNamespace>sys-tiller</helm.tillerNamespace>
-        <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
+        <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <!-- new Maven version management -->
-        <revision>1.0.0</revision>
+        <revision>2.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
+        <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!-- Payara JEE 8 runtime dependencies -->
-            <dependency>
-                <groupId>fish.payara.extras</groupId>
-                <artifactId>payara-embedded-all</artifactId>
-                <version>5.184</version>
-                <scope>provided</scope>
-            </dependency>
             <!-- Generic JEE 8 runtime dependencies -->
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
-                <version>8.0</version>
+                <version>${javaee.version}</version>
                 <scope>compile</scope>
+            </dependency>
+            <!-- Payara JEE 8 runtime dependencies -->
+            <dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
+                <scope>provided</scope>
             </dependency>
             <!-- Miscellaneous 3rd party stuff -->
             <dependency>
@@ -77,7 +81,15 @@
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- Miscellaneous 3rd party stuff -->
+        <!-- Payara MicroProfile API BOM imports all MicroProfile API's -->
+        <!-- declaring this particular BOM in dependencyManagement section does not work!!! -->
+        <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <version>${microprofile.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -107,7 +119,7 @@
         <dependency>
             <groupId>group.msg.at.cloud</groupId>
             <artifactId>cnj-hello-backend-test</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -176,9 +188,9 @@
                 </plugin>
                 <!-- Docker Compose Maven plugin to run docker container groups for testing -->
                 <plugin>
-                    <groupId>com.dkanejs.maven.plugins</groupId>
-                    <artifactId>docker-compose-maven-plugin</artifactId>
-                    <version>${maven.docker.compose.plugin.version}</version>
+                    <groupId>group.msg.at.cloud.tools</groupId>
+                    <artifactId>compose-maven-plugin</artifactId>
+                    <version>${maven.compose.plugin.version}</version>
                 </plugin>
                 <!-- Flatten Maven plugin adding support of CI friendly version numbers -->
                 <plugin>
@@ -244,110 +256,107 @@
         </plugins>
     </build>
     <profiles>
-        <!-- profile pre-commit-stage representing the local build supposed to be run before committing/pushing to GIT -->
-        <!-- compiles all sources; runs unit tests; builds and tests docker image using system tests -->
-		<profile>
-			<id>pre-commit-stage</id>
-			<properties>
-				<test.target.route>http://192.168.99.100:8080</test.target.route>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<excludes>
-								<exclude>**/*SystemTest.java</exclude>
-							</excludes>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-resources-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-docker-resources</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<configuration>
-									<resources>
-										<resource>
-											<directory>${project.basedir}/src/main/docker</directory>
-											<filtering>true</filtering>
-										</resource>
-										<resource>
-											<directory>${project.build.directory}</directory>
-											<includes>
-												<include>*.war</include>
-											</includes>
-										</resource>
-									</resources>
-									<outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>build-docker-image</id>
-								<phase>package</phase>
-								<goals>
-									<goal>build</goal>
-								</goals>
-								<configuration>
-									<images>
-										<image>
-											<name>${docker.image.name}</name>
-											<build>
-												<dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
-												<tags>
-													<tag>${project.version}</tag>
-												</tags>
-											</build>
-										</image>
-									</images>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>com.dkanejs.maven.plugins</groupId>
-						<artifactId>docker-compose-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>start-docker-containers</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>up</goal>
-								</goals>
-								<configuration>
-									<composeFile>
-										${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
-									</composeFile>
-									<detachedMode>true</detachedMode>
-									<verbose>false</verbose>
-								</configuration>
-							</execution>
-							<execution>
-								<id>stop-docker-containers</id>
-								<phase>post-integration-test</phase>
-								<goals>
-									<goal>down</goal>
-								</goals>
-								<configuration>
-									<composeFile>
-										${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
-									</composeFile>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
+        <profile>
+            <id>pre-commit-stage</id>
+            <properties>
+                <test.target.route>http://192.168.99.100:38080</test.target.route>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*SystemTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-docker-resources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/docker</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.build.directory}</directory>
+                                            <includes>
+                                                <include>*.war</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-docker-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                                <configuration>
+                                    <images>
+                                        <image>
+                                            <name>${docker.image.name}</name>
+                                            <build>
+                                                <dockerFileDir>${project.build.directory}/docker-resources
+                                                </dockerFileDir>
+                                                <tags>
+                                                    <tag>${project.version}</tag>
+                                                </tags>
+                                            </build>
+                                        </image>
+                                    </images>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>group.msg.at.cloud.tools</groupId>
+                        <artifactId>compose-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-docker-containers</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>upWithLogs</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>
+                                        ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
+                                    </composeFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-docker-containers</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>
+                                        ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
+                                    </composeFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
@@ -383,9 +392,9 @@
                             </execution>
                         </executions>
                     </plugin>
-				</plugins>
-			</build>
-		</profile>
+                </plugins>
+            </build>
+        </profile>
         <!-- profile commit-stage representing commit-stage of CI build -->
         <!-- builds and analyzes all sources; runs unit tests -->
         <profile>
@@ -490,7 +499,8 @@
                                             <version>${project.version}</version>
                                             <type>war</type>
                                             <overWrite>true</overWrite>
-                                            <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
+                                            <outputDirectory>${project.build.directory}/docker-resources
+                                            </outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
@@ -513,7 +523,8 @@
                                         <image>
                                             <name>${docker.image.name}</name>
                                             <build>
-                                                <dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
+                                                <dockerFileDir>${project.build.directory}/docker-resources
+                                                </dockerFileDir>
                                                 <tags>
                                                     <tag>${project.version}</tag>
                                                 </tags>
@@ -533,7 +544,8 @@
                                         <image>
                                             <name>${docker.image.name}</name>
                                             <build>
-                                                <dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
+                                                <dockerFileDir>${project.build.directory}/docker-resources
+                                                </dockerFileDir>
                                                 <tags>
                                                     <tag>${project.version}</tag>
                                                 </tags>
@@ -546,21 +558,19 @@
                     </plugin>
                     <!-- start docker containers before running tests and stop them after running tests -->
                     <plugin>
-                        <groupId>com.dkanejs.maven.plugins</groupId>
-                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <groupId>group.msg.at.cloud.tools</groupId>
+                        <artifactId>compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>start-docker-containers</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>up</goal>
+                                    <goal>upWithLogs</goal>
                                 </goals>
                                 <configuration>
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
-                                    <detachedMode>true</detachedMode>
-                                    <verbose>false</verbose>
                                 </configuration>
                             </execution>
                             <execution>
@@ -573,6 +583,8 @@
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <removeOrphans>true</removeOrphans>
                                 </configuration>
                             </execution>
                         </executions>
@@ -652,7 +664,7 @@
                             <skip>true</skip>
                         </configuration>
                     </plugin>
-                    <!-- copy resources for helm deployment applying filtering -->
+                    <!-- skip copying resources, since we are working with an already built artifact -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
@@ -678,12 +690,13 @@
                                 <id>helm-install</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>install</goal>
+                                    <goal>deploy</goal>
                                 </goals>
                                 <configuration>
                                     <helmChartDirectory>src/main/helm/${project.artifactId}</helmChartDirectory>
                                     <helmReleaseName>${project.artifactId}</helmReleaseName>
-                                    <helmNamespace>int</helmNamespace>
+                                    <helmReleaseNamespace>int</helmReleaseNamespace>
+                                    <debug>true</debug>
                                 </configuration>
                             </execution>
                             <execution>
@@ -746,3 +759,4 @@
         </repository>
     </distributionManagement>
 </project>
+
