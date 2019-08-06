@@ -39,11 +39,5 @@ pipeline:
     image: docker.at.automotive.msg.team/cloudtrain/cnj-drone-mvn-k8s
     commands:
       - mvn clean verify -f cnj-hello-backend-spring/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles integration-test-stage -Dtest.target.route=http://k8sapps.at.automotive.msg.team/cnj-hello-backend-spring
-  notification-stage:
-    image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
-    channel: drone
-    when:
-      status: [ success, failure ]
 
     
