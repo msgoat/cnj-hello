@@ -39,12 +39,3 @@ pipeline:
     image: docker.at.automotive.msg.team/cloudtrain/cnj-drone-mvn-k8s
     commands:
       - mvn clean verify -f cnj-hello-backend-spring/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles integration-test-stage -Dtest.target.route=http://k8sapps.at.automotive.msg.team/cnj-hello-backend-spring
-  notify:
-    image: diyfr/drone_plugin_teams
-    webhook: "https://teams.microsoft.com/l/channel/19%3a368037fc00b241c68676ffca59d91481%40thread.skype/AT.41%2520Drone?groupId=85f4e33f-31f1-43ec-a5e3-9c8d5b231089&tenantId=763b2760-45c5-46d3-883e-29705bba49b7"
-    content:
-      title: "Drone build ${DRONE_BUILD_NUMBER} of ${DRONE_REPO}: ${DRONE_BUILD_STATUS}"
-      text: "Please check status of build ${DRONE_REPO}:#${DRONE_BUILD_NUMBER}"
-    when:
-      status: [ success, failure ]
-    
