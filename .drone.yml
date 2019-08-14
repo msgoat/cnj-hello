@@ -46,5 +46,5 @@ pipeline:
       title: "Drone build ${DRONE_BUILD_NUMBER} of ${DRONE_REPO}: ${DRONE_BUILD_STATUS}"
       text: "Please check status of build ${DRONE_REPO}:#${DRONE_BUILD_NUMBER}"
     when:
-      branch: master
+      status: [ success, failure ]
     
