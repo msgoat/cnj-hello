@@ -9,9 +9,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <junit.version>5.3.2</junit.version>
-        <cnj.common.test.version>1.0.2</cnj.common.test.version>
+        <cnj.common.test.version>1.1.0</cnj.common.test.version>
         <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
         <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
         <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
@@ -24,7 +24,7 @@
         <maven.helm.plugin.version>0.9.0</maven.helm.plugin.version>
         <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
         <!-- new Maven version management -->
-        <revision>2.0.0</revision>
+        <revision>3.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -50,7 +50,7 @@
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
