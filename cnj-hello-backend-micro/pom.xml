@@ -47,7 +47,7 @@
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
-        <maven.helm.plugin.version>1.0.0</maven.helm.plugin.version>
+        <maven.helm.plugin.version>2.0.0</maven.helm.plugin.version>
         <!-- new Maven version management -->
         <revision>3.0.0</revision>
         <sha1></sha1>
@@ -748,9 +748,9 @@
                                     <goal>deploy</goal>
                                 </goals>
                                 <configuration>
-                                    <helmChartDirectory>src/main/helm/${project.artifactId}</helmChartDirectory>
-                                    <helmReleaseName>${project.artifactId}</helmReleaseName>
-                                    <helmReleaseNamespace>int</helmReleaseNamespace>
+                                    <chartDirectory>src/main/helm/${project.artifactId}</chartDirectory>
+                                    <releaseName>${project.artifactId}</releaseName>
+                                    <namespace>int</namespace>
                                     <debug>true</debug>
                                 </configuration>
                             </execution>
@@ -758,10 +758,12 @@
                                 <id>helm-delete</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
-                                    <goal>delete</goal>
+                                    <goal>uninstall</goal>
                                 </goals>
                                 <configuration>
-                                    <helmReleaseName>${project.artifactId}</helmReleaseName>
+                                    <releaseName>${project.artifactId}</releaseName>
+                                    <namespace>int</namespace>
+                                    <debug>true</debug>
                                 </configuration>
                             </execution>
                         </executions>
