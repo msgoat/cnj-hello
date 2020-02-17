@@ -10,34 +10,43 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+        <java.version>11</java.version>
+        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>
         <logstash.logback.encoder.version>6.1</logstash.logback.encoder.version>
-        <micrometer.version>1.2.0</micrometer.version>
-        <common.persistence.jpa.version>1.0.2</common.persistence.jpa.version>
         <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
-        <flyway.version>5.2.4</flyway.version>
-        <keycloak.version>4.8.3.Final</keycloak.version>
-        <postgres.jdbc.version>42.2.5</postgres.jdbc.version>
-        <maven.docker.plugin.version>0.27.2</maven.docker.plugin.version>
-        <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
-        <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
+        <!-- common logging dependencies -->
+        <slf4j.version>1.7.30</slf4j.version>
+        <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
+        <!-- common test dependencies -->
+        <junit.version>5.6.0</junit.version>
+        <backend.test.version>3.0.0</backend.test.version>
+        <!-- pinning versions of common maven plugins -->
+        <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
+        <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+        <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
         <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
-        <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
-        <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
-        <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
+        <maven.flatten.plugin.version>1.2.1</maven.flatten.plugin.version>
+        <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
+        <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
         <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+        <maven.site.plugin.version>3.8.2</maven.site.plugin.version>
+        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+        <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+        <!-- pinning versions of application type specific maven plugins -->
         <maven.spring.boot.plugin.version>${spring.boot.version}</maven.spring.boot.plugin.version>
-        <maven.helm.plugin.version>0.9.0</maven.helm.plugin.version>
-        <helm.tillerNamespace>sys-tiller</helm.tillerNamespace>
-        <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
+        <!-- pinning versions of cloud native specific maven plugins -->
+        <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
+        <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
+        <maven.helm.plugin.version>1.0.0</maven.helm.plugin.version>
         <!-- new Maven version management -->
-        <revision>2.0.0</revision>
+        <revision>3.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -74,30 +83,40 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.restdocs</groupId>
-            <artifactId>spring-restdocs-mockmvc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>group.msg.at.cloud</groupId>
             <artifactId>cnj-hello-backend-test</artifactId>
-            <version>1.0.0</version>
+            <version>${backend.test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
         <pluginManagement>
             <plugins>
+                <!-- common maven plugins section -->
                 <plugin>
-                    <groupId>io.fabric8</groupId>
-                    <artifactId>docker-maven-plugin</artifactId>
-                    <version>${maven.docker.plugin.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.plugin.version}</version>
                 </plugin>
-                <!-- Docker Compose Maven plugin to run docker container groups for testing -->
                 <plugin>
-                    <groupId>group.msg.at.cloud.tools</groupId>
-                    <artifactId>compose-maven-plugin</artifactId>
-                    <version>${maven.compose.plugin.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <parameters>true</parameters>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven.deploy.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -111,18 +130,8 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.plugin.version}</version>
-                    <configuration>
-                        <parameters>true</parameters>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                    </configuration>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven.install.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -149,6 +158,21 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${maven.site.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>${maven.flatten.plugin.version}</version>
+                </plugin>
+                <!-- spring boot specific maven plugins section -->
+                <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${maven.spring.boot.plugin.version}</version>
@@ -164,13 +188,17 @@
                         <mainClass>${start-class}</mainClass>
                     </configuration>
                 </plugin>
-                <!-- Flatten Maven plugin adding support of CI friendly version numbers -->
+                <!-- cloud native specific maven plugins section -->
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>flatten-maven-plugin</artifactId>
-                    <version>${maven.flatten.plugin.version}</version>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${maven.docker.plugin.version}</version>
                 </plugin>
-                <!-- Helm Maven Plugin to install/delete Helm Charts on Kubernetes -->
+                <plugin>
+                    <groupId>group.msg.at.cloud.tools</groupId>
+                    <artifactId>compose-maven-plugin</artifactId>
+                    <version>${maven.compose.plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>group.msg.at.cloud.tools</groupId>
                     <artifactId>helm-maven-plugin</artifactId>
@@ -346,7 +374,6 @@
                                 </goals>
                                 <phase>integration-test</phase>
                                 <configuration>
-                                    <forkCount>0</forkCount>
                                     <includes>
                                         <include>**/*SystemTest.java</include>
                                     </includes>
@@ -579,7 +606,6 @@
                                 </goals>
                                 <phase>integration-test</phase>
                                 <configuration>
-                                    <forkCount>0</forkCount>
                                     <includes>
                                         <include>**/*SystemTest.java</include>
                                     </includes>
@@ -702,7 +728,6 @@
                                 <phase>integration-test</phase>
                                 <configuration>
                                     <skip>false</skip>
-                                    <forkCount>0</forkCount>
                                     <includes>
                                         <include>**/*SystemTest.java</include>
                                     </includes>

@@ -10,37 +10,46 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <javaee.version>8.0</javaee.version>
+        <javaee.version>8.0.1</javaee.version>
         <payara.version>5.194</payara.version>
-        <junit.version>5.3.2</junit.version>
+        <microprofile.version>3.2</microprofile.version>
+        <postgres.jdbc.version>42.2.10</postgres.jdbc.version>
         <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
-        <microprofile.version>3.2</microprofile.version>
-        <postgres.jdbc.version>42.2.10</postgres.jdbc.version>
-        <maven.docker.plugin.version>0.27.2</maven.docker.plugin.version>
-        <maven.enforcer.plugin.version>3.0.0-M2</maven.enforcer.plugin.version>
-        <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
-        <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
-        <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
-        <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
-        <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+        <!-- common logging dependencies -->
+        <slf4j.version>1.7.30</slf4j.version>
+        <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
+        <!-- common test dependencies -->
+        <junit.version>5.6.0</junit.version>
+        <backend.test.version>3.0.0</backend.test.version>
+        <!-- pinning versions of common maven plugins -->
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+        <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+        <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
         <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+        <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
+        <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
+        <maven.flatten.plugin.version>1.2.1</maven.flatten.plugin.version>
         <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
-        <maven.site.plugin.version>3.7.1</maven.site.plugin.version>
+        <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
+        <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+        <maven.site.plugin.version>3.8.2</maven.site.plugin.version>
+        <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+        <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+        <!-- pinning versions of application type specific maven plugins -->
         <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
-        <maven.helm.plugin.version>0.9.0</maven.helm.plugin.version>
-        <helm.tillerNamespace>sys-tiller</helm.tillerNamespace>
+        <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
+        <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
+        <maven.helm.plugin.version>1.0.0</maven.helm.plugin.version>
         <!-- new Maven version management -->
         <revision>3.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
-        <maven.flatten.plugin.version>1.1.0</maven.flatten.plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -58,13 +67,30 @@
                 <version>${payara.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <!-- Eclipse MicroProfile runtime dependencies -->
+            <dependency>
+                <groupId>org.eclipse.microprofile</groupId>
+                <artifactId>microprofile</artifactId>
+                <version>${microprofile.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- Miscellaneous 3rd party stuff -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.8.1</version>
             </dependency>
-            <!-- Test runtime dependencies -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.slf4j.version}</version>
+            </dependency>
             <!-- JUnit 5.x -->
             <dependency>
                 <groupId>org.junit</groupId>
@@ -81,15 +107,6 @@
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- Payara MicroProfile API BOM imports all MicroProfile API's -->
-        <!-- declaring this particular BOM in dependencyManagement section does not work!!! -->
-        <dependency>
-            <groupId>org.eclipse.microprofile</groupId>
-            <artifactId>microprofile</artifactId>
-            <version>${microprofile.version}</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -100,26 +117,20 @@
             <artifactId>payara-embedded-all</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Test runtime dependencies -->
+        <!-- logging dependencies -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>group.msg.at.cloud</groupId>
             <artifactId>cnj-hello-backend-test</artifactId>
-            <version>3.0.0</version>
+            <version>${backend.test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -145,6 +156,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven.deploy.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
