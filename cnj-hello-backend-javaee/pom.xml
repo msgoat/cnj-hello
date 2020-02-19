@@ -5,27 +5,34 @@
     <artifactId>cnj-hello-backend-javaee</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <packaging>war</packaging>
-    <description>Simple cloud native Java backend based on Java EE Full Profile (done)</description>
+    <description>Simple cloud native Java backend based on Java EE Full Profile</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- runtime related properties -->
         <java.version>11</java.version>
         <javaee.version>8.0.1</javaee.version>
         <payara.version>5.194</payara.version>
         <microprofile.version>3.2</microprofile.version>
         <postgres.jdbc.version>42.2.10</postgres.jdbc.version>
-        <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
-        <docker.organization.name>cloudtrain</docker.organization.name>
-        <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
-        <docker.removeMode>all</docker.removeMode>
-        <docker.cleanup>try</docker.cleanup>
-        <docker.verbose>true</docker.verbose>
         <!-- common logging dependencies -->
         <slf4j.version>1.7.30</slf4j.version>
         <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
         <!-- common test dependencies -->
         <junit.version>5.6.0</junit.version>
         <backend.test.version>3.0.0</backend.test.version>
+        <!-- docker related properties -->
+        <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
+        <docker.organization.name>cloudtrain</docker.organization.name>
+        <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
+        <docker.removeMode>all</docker.removeMode>
+        <docker.cleanup>try</docker.cleanup>
+        <docker.verbose>true</docker.verbose>
+        <!-- kubernetes related properties -->
+        <k8s.cluster.route>https://k8sapps.at.automotive.msg.team</k8s.cluster.route>
+        <k8s.ingress.host></k8s.ingress.host>
+        <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
+        <k8s.test.target.route>${k8s.cluster.route}${k8s.ingress.path}</k8s.test.target.route>
         <!-- pinning versions of common maven plugins -->
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
@@ -45,7 +52,7 @@
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
-        <maven.helm.plugin.version>2.0.0</maven.helm.plugin.version>
+        <maven.helm.plugin.version>2.0.1</maven.helm.plugin.version>
         <!-- new Maven version management -->
         <revision>3.0.0</revision>
         <sha1></sha1>
@@ -102,29 +109,26 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- =========================== -->
+        <!-- execution time dependencies -->
+        <!-- =========================== -->
+        <!-- common dependencies section -->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <!-- Payara Jakarta EE 8 runtime for testing purposes -->
-        <dependency>
-            <groupId>fish.payara.extras</groupId>
-            <artifactId>payara-embedded-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- logging dependencies -->
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <!-- showcase specific section -->
+        <!-- =========================== -->
+        <!-- test time dependencies      -->
+        <!-- =========================== -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-embedded-all</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -133,10 +137,16 @@
             <version>${backend.test.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>
             <plugins>
+                <!-- common maven plugins section -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -154,13 +164,13 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven.deploy.plugin.version}</version>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven.dependency.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven.dependency.plugin.version}</version>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven.deploy.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -168,9 +178,17 @@
                     <version>${maven.enforcer.plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven.failsafe.plugin.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>${maven.install.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
@@ -181,13 +199,11 @@
                     <version>${maven.surefire.plugin.version}</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${maven.failsafe.plugin.version}</version>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>${maven.flatten.plugin.version}</version>
                 </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven.resources.plugin.version}</version>
-                </plugin>
+                <!-- application type specific maven plugins section -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
@@ -196,25 +212,17 @@
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
-                <!-- Docker Maven plugin to build and push docker images -->
+                <!-- cloud native specific maven plugins section -->
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
                     <version>${maven.docker.plugin.version}</version>
                 </plugin>
-                <!-- Docker Compose Maven plugin to run docker container groups for testing -->
                 <plugin>
                     <groupId>group.msg.at.cloud.tools</groupId>
                     <artifactId>compose-maven-plugin</artifactId>
                     <version>${maven.compose.plugin.version}</version>
                 </plugin>
-                <!-- Flatten Maven plugin adding support of CI friendly version numbers -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>flatten-maven-plugin</artifactId>
-                    <version>${maven.flatten.plugin.version}</version>
-                </plugin>
-                <!-- Helm Maven Plugin to install/delete Helm Charts on Kubernetes -->
                 <plugin>
                     <groupId>group.msg.at.cloud.tools</groupId>
                     <artifactId>helm-maven-plugin</artifactId>
@@ -272,6 +280,9 @@
         </plugins>
     </build>
     <profiles>
+        <!-- profile pre-commit-stage representing pre-commit-stage of local build -->
+        <!-- supposed to be run before each push to the central GIT repository -->
+        <!-- builds all artifacts; runs unit tests; runs system tests on running docker container -->
         <profile>
             <id>pre-commit-stage</id>
             <properties>
@@ -647,8 +658,8 @@
         <profile>
             <id>integration-test-stage</id>
             <properties>
-                <test.target.route>http://localhost:30080/${project.artifactId}</test.target.route>
-                <k8s.namespace>int</k8s.namespace>
+                <k8s.cluster.namespace>int</k8s.cluster.namespace>
+                <test.target.route>${k8s.test.target.route}</test.target.route>
                 <maven.install.skip>true</maven.install.skip>
             </properties>
             <build>
@@ -678,19 +689,25 @@
                             <skip>true</skip>
                         </configuration>
                     </plugin>
-                    <!-- skip copying resources, since we are working with an already built artifact -->
+                    <!-- copy resources for helm deployment applying filtering -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>default-resources</id>
+                                <id>copy-helm-resources</id>
                                 <phase>process-resources</phase>
                                 <goals>
-                                    <goal>resources</goal>
+                                    <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>true</skip>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/helm/${project.artifactId}</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/helm-resources/${project.artifactId}</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -707,12 +724,13 @@
                                     <goal>deploy</goal>
                                 </goals>
                                 <configuration>
-                                    <chartDirectory>src/main/helm/${project.artifactId}</chartDirectory>
+                                    <chartDirectory>${project.build.directory}/helm-resources/${project.artifactId}</chartDirectory>
                                     <releaseName>${project.artifactId}</releaseName>
-                                    <namespace>int</namespace>
+                                    <namespace>${k8s.cluster.namespace}</namespace>
                                     <debug>true</debug>
                                 </configuration>
                             </execution>
+<!--
                             <execution>
                                 <id>helm-delete</id>
                                 <phase>post-integration-test</phase>
@@ -721,10 +739,11 @@
                                 </goals>
                                 <configuration>
                                     <releaseName>${project.artifactId}</releaseName>
-                                    <namespace>int</namespace>
+                                    <namespace>${k8s.cluster.namespace}</namespace>
                                     <debug>true</debug>
                                 </configuration>
                             </execution>
+-->
                         </executions>
                     </plugin>
                     <!-- run system tests on installed helm release -->
