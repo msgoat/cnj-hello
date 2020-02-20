@@ -9,6 +9,6 @@ version: '3'
 services:
 
   backend:
-    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-micro:latest
+    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-micro:${project.version}
     ports:
       - "38080:8080"

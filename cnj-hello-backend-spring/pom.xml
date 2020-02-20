@@ -326,6 +326,22 @@
                                     <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>copy-compose-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/docker/${project.artifactId}</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/compose-resources/${project.artifactId}</outputDirectory>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
@@ -367,7 +383,7 @@
                                 </goals>
                                 <configuration>
                                     <composeFile>
-                                        ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
+                                        ${project.build.directory}/compose-resources/${project.artifactId}/docker-compose.yml
                                     </composeFile>
                                 </configuration>
                             </execution>
@@ -379,7 +395,7 @@
                                 </goals>
                                 <configuration>
                                     <composeFile>
-                                        ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
+                                        ${project.build.directory}/compose-resources/${project.artifactId}/docker-compose.yml
                                     </composeFile>
                                 </configuration>
                             </execution>
@@ -485,16 +501,6 @@
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>default-resources</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>resources</goal>
-                                </goals>
-                                <configuration>
-                                    <skip>true</skip>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>copy-docker-resources</id>
                                 <phase>package</phase>
                                 <goals>
@@ -508,6 +514,22 @@
                                         </resource>
                                     </resources>
                                     <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-compose-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/docker/${project.artifactId}</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/compose-resources/${project.artifactId}</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -598,7 +620,7 @@
                                 </goals>
                                 <configuration>
                                     <composeFile>
-                                        ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
+                                        ${project.build.directory}/compose-resources/${project.artifactId}/docker-compose.yml
                                     </composeFile>
                                 </configuration>
                             </execution>
@@ -610,7 +632,7 @@
                                 </goals>
                                 <configuration>
                                     <composeFile>
-                                        ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
+                                        ${project.build.directory}/compose-resources/${project.artifactId}/docker-compose.yml
                                     </composeFile>
                                     <removeVolumes>true</removeVolumes>
                                     <removeOrphans>true</removeOrphans>
