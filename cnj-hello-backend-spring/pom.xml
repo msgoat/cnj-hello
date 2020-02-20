@@ -495,11 +495,21 @@
                             <skipIfEmpty>true</skipIfEmpty>
                         </configuration>
                     </plugin>
-                    <!-- copy resources for docker build applying filtering -->
+                    <!-- suppress default copy resources (otherwise we would generate a new JAR!); copy resources for docker build applying filtering -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
+                            <execution>
+                                <id>dont-copy-default-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>true</skip>
+                                </configuration>
+                            </execution>
                             <execution>
                                 <id>copy-docker-resources</id>
                                 <phase>package</phase>
@@ -518,7 +528,7 @@
                             </execution>
                             <execution>
                                 <id>copy-compose-resources</id>
-                                <phase>process-resources</phase>
+                                <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
