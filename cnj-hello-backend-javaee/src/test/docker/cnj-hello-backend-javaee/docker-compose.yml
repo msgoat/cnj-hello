@@ -9,7 +9,7 @@ version: '3'
 services:
 
   backend:
-    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-javaee:latest
+    image: docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-javaee:${project.version}
     ports:
       - "38080:8080"
 
