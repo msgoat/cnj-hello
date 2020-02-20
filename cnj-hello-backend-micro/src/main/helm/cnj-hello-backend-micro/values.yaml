@@ -27,16 +27,10 @@ ingress:
   enabled: true
   annotations:
     traefik.frontend.rule.type: PathPrefixStrip
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: ""
-      paths: ["/cnj-hello-backend-micro"]
-
+  rules:
+    - host: "${k8s.ingress.host}"
+      paths: ["${k8s.ingress.path}"]
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

@@ -178,6 +178,7 @@
                     <version>${maven.enforcer.plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${maven.failsafe.plugin.version}</version>
                 </plugin>
@@ -187,14 +188,17 @@
                     <version>${maven.install.plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven.resources.plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>${maven.site.plugin.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.plugin.version}</version>
                 </plugin>
@@ -549,8 +553,7 @@
                                         <image>
                                             <name>${docker.image.name}</name>
                                             <build>
-                                                <dockerFileDir>${project.build.directory}/docker-resources
-                                                </dockerFileDir>
+                                                <dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
                                                 <tags>
                                                     <tag>${project.version}</tag>
                                                 </tags>
@@ -570,8 +573,7 @@
                                         <image>
                                             <name>${docker.image.name}</name>
                                             <build>
-                                                <dockerFileDir>${project.build.directory}/docker-resources
-                                                </dockerFileDir>
+                                                <dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
                                                 <tags>
                                                     <tag>${project.version}</tag>
                                                 </tags>

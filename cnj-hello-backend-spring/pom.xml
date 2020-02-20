@@ -6,25 +6,32 @@
     <artifactId>cnj-hello-backend-spring</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <packaging>jar</packaging>
-    <description>Simplest possible cloud native java backend based on Spring Boot / Spring Cloud</description>
+    <description>Simplest possible cloud native java backend based on Spring Boot</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- runtime related properties -->
         <java.version>11</java.version>
         <spring.boot.version>2.2.4.RELEASE</spring.boot.version>
+        <!-- common logging dependencies -->
+        <slf4j.version>1.7.30</slf4j.version>
+        <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
         <logstash.logback.encoder.version>6.1</logstash.logback.encoder.version>
+        <!-- common test dependencies -->
+        <junit.version>5.6.0</junit.version>
+        <backend.test.version>3.0.0</backend.test.version>
+        <!-- docker related properties -->
         <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
-        <!-- common logging dependencies -->
-        <slf4j.version>1.7.30</slf4j.version>
-        <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
-        <!-- common test dependencies -->
-        <junit.version>5.6.0</junit.version>
-        <backend.test.version>3.0.0</backend.test.version>
+        <!-- kubernetes related properties -->
+        <k8s.cluster.route>https://k8sapps.at.automotive.msg.team</k8s.cluster.route>
+        <k8s.ingress.host></k8s.ingress.host>
+        <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
+        <k8s.test.target.route>${k8s.cluster.route}${k8s.ingress.path}</k8s.test.target.route>
         <!-- pinning versions of common maven plugins -->
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
@@ -44,7 +51,7 @@
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
-        <maven.helm.plugin.version>2.0.0</maven.helm.plugin.version>
+        <maven.helm.plugin.version>2.0.1</maven.helm.plugin.version>
         <!-- new Maven version management -->
         <revision>3.0.0</revision>
         <sha1></sha1>
@@ -63,20 +70,28 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <!-- =========================== -->
+        <!-- execution time dependencies -->
+        <!-- =========================== -->
+        <!-- common dependencies section -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Spring Boot Actuator for liveness and readiness probes -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- showcase specific section -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <!-- Spring Boot Actuator for monitoring -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+        <!-- =========================== -->
+        <!-- test time dependencies      -->
+        <!-- =========================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -86,6 +101,11 @@
             <groupId>group.msg.at.cloud</groupId>
             <artifactId>cnj-hello-backend-test</artifactId>
             <version>${backend.test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -103,9 +123,9 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven.compiler.plugin.version}</version>
                     <configuration>
-                        <parameters>true</parameters>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
+                        <parameters>true</parameters>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -158,6 +178,7 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>${maven.site.plugin.version}</version>
                 </plugin>
@@ -219,7 +240,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.5</version>
+                                    <version>[3.5,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${java.version}</version>
@@ -256,8 +277,9 @@
         </plugins>
     </build>
     <profiles>
-        <!-- profile pre-commit-stage representing the local build supposed to be run before committing/pushing to GIT -->
-        <!-- compiles all sources; runs unit tests; builds and tests docker image using system tests -->
+        <!-- profile pre-commit-stage representing pre-commit-stage of local build -->
+        <!-- supposed to be run before each push to the central GIT repository -->
+        <!-- builds all artifacts; runs unit tests; runs system tests on running docker container -->
         <profile>
             <id>pre-commit-stage</id>
             <properties>
@@ -407,10 +429,6 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
@@ -418,6 +436,10 @@
                                 <exclude>**/*SystemTest.java</exclude>
                             </excludes>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
@@ -590,6 +612,8 @@
                                     <composeFile>
                                         ${project.basedir}/src/test/docker/${project.artifactId}/docker-compose.yml
                                     </composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <removeOrphans>true</removeOrphans>
                                 </configuration>
                             </execution>
                         </executions>
@@ -637,8 +661,8 @@
         <profile>
             <id>integration-test-stage</id>
             <properties>
-                <test.target.route>http://localhost:30080/${project.artifactId}</test.target.route>
-                <k8s.namespace>int</k8s.namespace>
+                <k8s.cluster.namespace>int</k8s.cluster.namespace>
+                <test.target.route>${k8s.test.target.route}</test.target.route>
                 <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
                 <maven.install.skip>true</maven.install.skip>
             </properties>
@@ -675,13 +699,19 @@
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>default-resources</id>
+                                <id>copy-helm-resources</id>
                                 <phase>process-resources</phase>
                                 <goals>
-                                    <goal>resources</goal>
+                                    <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>true</skip>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/helm/${project.artifactId}</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}/helm-resources/${project.artifactId}</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -698,12 +728,13 @@
                                     <goal>deploy</goal>
                                 </goals>
                                 <configuration>
-                                    <chartDirectory>src/main/helm/${project.artifactId}</chartDirectory>
+                                    <chartDirectory>${project.build.directory}/helm-resources/${project.artifactId}</chartDirectory>
                                     <releaseName>${project.artifactId}</releaseName>
-                                    <namespace>int</namespace>
+                                    <namespace>${k8s.cluster.namespace}</namespace>
                                     <debug>true</debug>
                                 </configuration>
                             </execution>
+<!--
                             <execution>
                                 <id>helm-delete</id>
                                 <phase>post-integration-test</phase>
@@ -712,10 +743,11 @@
                                 </goals>
                                 <configuration>
                                     <releaseName>${project.artifactId}</releaseName>
-                                    <namespace>int</namespace>
+                                    <namespace>${k8s.cluster.namespace}</namespace>
                                     <debug>true</debug>
                                 </configuration>
                             </execution>
+-->
                         </executions>
                     </plugin>
                     <!-- run system tests on installed helm release -->
@@ -730,7 +762,6 @@
                                 </goals>
                                 <phase>integration-test</phase>
                                 <configuration>
-                                    <skip>false</skip>
                                     <includes>
                                         <include>**/*SystemTest.java</include>
                                     </includes>
