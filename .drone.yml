@@ -5,12 +5,8 @@ name: cnj-hello-build
 
 steps:
   - name: test-commit-stage
-    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn:2.0.2
-    pull: always
+    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
-      - ls -al
-      - whoami
-      - cat /usr/share/maven/conf/settings.xml
       - mvn clean deploy -f cnj-hello-backend-test/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage
   - name: javaee-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-docker
