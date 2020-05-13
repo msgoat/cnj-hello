@@ -5,12 +5,12 @@ Simplest possible cloud native java application based on Spring Boot.
 As demonstrated in training session.
 
 ## Docker Pull Command
-`docker pull docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-spring`
+`docker pull docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-spring`
 
 ## Run this application 
 
 ``` 
-docker run --name cnj-hello-backend-spring -p 8080:8080 docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-spring
+docker run --name cnj-hello-backend-spring -p 8080:8080 docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-spring
 ```
 
 ## Build this application 

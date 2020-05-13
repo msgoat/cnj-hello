@@ -1,4 +1,4 @@
-FROM docker.at.automotive.msg.team/cloudtrain/cnj-docker-payara-full:3.0.2
+FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-docker-payara-full:4.0.0
 
 LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="AT41" \

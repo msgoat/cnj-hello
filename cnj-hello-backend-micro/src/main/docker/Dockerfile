@@ -1,4 +1,4 @@
-FROM docker.at.automotive.msg.team/msgoat/at41-docker-jre11:1.1.0
+FROM docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/at41-docker-jre11:2.0.0
 
 LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="CloudTrain" \

@@ -22,14 +22,14 @@
         <junit.version>5.6.0</junit.version>
         <backend.test.version>3.0.0</backend.test.version>
         <!-- docker related properties -->
-        <docker.registry.name>docker.at.automotive.msg.team</docker.registry.name>
+        <docker.registry.name>docker.at41tools.k8s.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
         <!-- kubernetes related properties -->
-        <k8s.cluster.route>https://k8sapps.at.automotive.msg.team</k8s.cluster.route>
+        <k8s.cluster.route>https://k8sapps.at41tools.k8s.aws.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
         <k8s.ingress.host></k8s.ingress.host>
         <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>

@@ -3,12 +3,12 @@
 Simplest possible cloud native java application based on Java EE 8.
 
 ## Docker Pull Command
-`docker pull docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-javaee`
+`docker pull docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-javaee`
 
 ## Run this application 
 
 ``` 
-docker run --name cnj-hello-backend-javaee -p 8080:8080 docker.at.automotive.msg.team/cloudtrain/cnj-hello-backend-javaee
+docker run --name cnj-hello-backend-javaee -p 8080:8080 docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-javaee
 ```
 
 ## Build this application 
