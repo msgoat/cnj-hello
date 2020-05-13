@@ -7,9 +7,7 @@ steps:
   - name: test-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
-      - pwd
-      - ls -al .
-      - whoami
+      - sudo chown -R runner:nogroup /drone/src
       - mvn clean deploy -f cnj-hello-backend-test/pom.xml --batch-mode --fail-fast --debug --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage
   - name: javaee-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
