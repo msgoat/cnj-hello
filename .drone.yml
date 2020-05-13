@@ -4,31 +4,31 @@ type: kubernetes
 name: docker-build
 
 steps:
-  test-commit-stage:
+  - name: test-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean deploy -f cnj-hello-backend-test/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage
-  javaee-commit-stage:
+  - name: javaee-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean deploy -f cnj-hello-backend-javaee/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage -Dtest.target.route=http://10.118.17.191:38080
-  javaee-integration-test-stage:
+  - name: javaee-integration-test-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean verify -f cnj-hello-backend-javaee/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles integration-test-stage
-  micro-commit-stage:
+  - name: micro-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean deploy -f cnj-hello-backend-micro/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage -Dtest.target.route=http://10.118.17.191:38080
-  micro-integration-test-stage:
+  - name: micro-integration-test-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean verify -f cnj-hello-backend-micro/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles integration-test-stage
-  spring-commit-stage:
+  - name: spring-commit-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean deploy -f cnj-hello-backend-spring/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles commit-stage -Dtest.target.route=http://10.118.17.191:38080
-  spring-integration-test-stage:
+  - name: spring-integration-test-stage
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
     commands:
       - mvn clean verify -f cnj-hello-backend-spring/pom.xml --batch-mode --fail-fast --errors -V -U -Dsurefire.useFile=false --activate-profiles integration-test-stage
