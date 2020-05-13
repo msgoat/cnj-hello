@@ -5,7 +5,8 @@ name: cnj-hello-build
 
 steps:
   - name: test-commit-stage
-    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn
+    image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-drone-build-mvn:2.0.1
+    pull: always
     commands:
       - ls -al
       - whoami
