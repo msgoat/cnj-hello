@@ -789,7 +789,7 @@
         <repository>
             <id>at41-maven-repository</id>
             <name>msg Automotive AT Maven Releases Repository</name>
-            <url>https://nexus.at.automotive.msg.team/repository/msgoat-maven-releases/</url>
+            <url>https://nexus.at41tools.k8s.aws.msgoat.eu/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 </project>
