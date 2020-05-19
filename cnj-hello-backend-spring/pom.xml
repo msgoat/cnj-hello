@@ -28,7 +28,7 @@
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
         <!-- kubernetes related properties -->
-        <k8s.cluster.route>https://k8sapps.at41tools.k8s.aws.msgoat.eu</k8s.cluster.route>
+        <k8s.cluster.route>https://apps.at41tools.k8s.aws.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
         <k8s.ingress.host></k8s.ingress.host>
         <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
@@ -622,7 +622,7 @@
         <profile>
             <id>integration-test-stage</id>
             <properties>
-                <k8s.cluster.namespace>int</k8s.cluster.namespace>
+                <k8s.cluster.namespace>cloudtrain-int</k8s.cluster.namespace>
                 <test.target.route>${k8s.test.target.route}</test.target.route>
                 <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
                 <maven.install.skip>true</maven.install.skip>
