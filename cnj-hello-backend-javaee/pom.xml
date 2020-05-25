@@ -291,7 +291,7 @@
         <profile>
             <id>pre-commit-stage</id>
             <properties>
-                <test.target.route>http://192.168.99.100:38080</test.target.route>
+                <test.target.route>http://localhost:38080</test.target.route>
             </properties>
             <build>
                 <plugins>
