@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>group.msg.at.cloud</groupId>
     <artifactId>cnj-hello</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
     <packaging>pom</packaging>
     <description>Simple cloud native Java application</description>
     <properties>
@@ -25,10 +25,10 @@
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
     </properties>
     <modules>
-        <module>cnj-hello-backend-test</module>
         <module>cnj-hello-backend-javaee</module>
         <module>cnj-hello-backend-micro</module>
         <module>cnj-hello-backend-spring</module>
+        <module>cnj-hello-backend-quarkus</module>
     </modules>
     <build>
         <plugins>

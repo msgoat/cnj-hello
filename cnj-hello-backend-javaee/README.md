@@ -52,10 +52,10 @@ Role(s) required
 
 | Port | Protocol | Description |
 | --- | --- | --- |
-| 8080 | HTTP | HTTP endpoint of this spring boot application | 
+| 8080 | HTTP | HTTP endpoint of this application | 
  
 ## Version / Tags
 
 | Tag(s) | Remarks |
 | --- | --- |
-| latest, 1.0.0 | first release |
+| latest, 4.0.0 | first release |

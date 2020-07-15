@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>group.msg.at.cloud</groupId>
     <artifactId>cnj-hello-backend-spring</artifactId>
-    <version>${revision}${sha1}${changelist}</version>
+    <version>${revision}${changelist}${sha1}</version>
     <packaging>jar</packaging>
     <description>Simplest possible cloud native java backend based on Spring Boot</description>
     <properties>
@@ -12,21 +12,22 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- runtime related properties -->
         <java.version>11</java.version>
-        <spring.boot.version>2.3.0.RELEASE</spring.boot.version>
+        <spring.boot.version>2.3.1.RELEASE</spring.boot.version>
         <!-- common logging dependencies -->
         <slf4j.version>1.7.30</slf4j.version>
-        <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
         <logstash.logback.encoder.version>6.1</logstash.logback.encoder.version>
         <!-- common test dependencies -->
         <junit.version>5.6.0</junit.version>
-        <backend.test.version>3.0.0</backend.test.version>
-        <!-- docker related properties -->
+        <restassured.version>3.3.0</restassured.version>
+        <cnj.common.test.version>2.0.0</cnj.common.test.version>
+         <!-- docker related properties -->
         <docker.registry.name>docker.at41tools.k8s.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
+        <docker.test.target.route>http://localhost:38080</docker.test.target.route>
         <!-- kubernetes related properties -->
         <k8s.cluster.route>https://apps.at41tools.k8s.aws.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
@@ -54,7 +55,7 @@
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
         <maven.helm.plugin.version>2.0.1</maven.helm.plugin.version>
         <!-- new Maven version management -->
-        <revision>3.1.0</revision>
+        <revision>4.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -68,6 +69,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- JUnit 5.x -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -77,19 +86,22 @@
         <!-- common dependencies section -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- Spring Boot Actuator for liveness and readiness probes -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!-- showcase specific section -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-        </dependency>
         <!-- =========================== -->
         <!-- test time dependencies      -->
         <!-- =========================== -->
@@ -99,14 +111,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>group.msg.at.cloud</groupId>
-            <artifactId>cnj-hello-backend-test</artifactId>
-            <version>${backend.test.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <groupId>group.msg.at.cloud.common</groupId>
+            <artifactId>cnj-common-test</artifactId>
+            <version>${cnj.common.test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -193,7 +200,7 @@
                     <artifactId>flatten-maven-plugin</artifactId>
                     <version>${maven.flatten.plugin.version}</version>
                 </plugin>
-                <!-- spring boot specific maven plugins section -->
+                <!-- application type specific maven plugins section -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
@@ -278,14 +285,58 @@
         </plugins>
     </build>
     <profiles>
+        <!-- profile local-stage -->
+        <!-- supposed to be run during local development -->
+        <!-- builds application and runs it -->
+        <profile>
+            <id>local-stage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*SystemTest.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>repackage</id>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                            <execution>
+                                <id>run-spring-application</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <profiles>
+                                        <profile>test</profile>
+                                    </profiles>
+                                    <systemPropertyVariables>
+                                        <cloudtrain.services.downstream.url>http://localhost:38090</cloudtrain.services.downstream.url>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- profile pre-commit-stage representing pre-commit-stage of local build -->
         <!-- supposed to be run before each push to the central GIT repository -->
         <!-- builds application; runs unit tests on application; builds docker image; runs system tests on docker container -->
         <profile>
             <id>pre-commit-stage</id>
-            <properties>
-                <test.target.route>http://localhost:38080</test.target.route>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -413,15 +464,13 @@
                                 </goals>
                                 <phase>integration-test</phase>
                                 <configuration>
+                                    <failIfNoTests>true</failIfNoTests>
                                     <includes>
                                         <include>**/*SystemTest.java</include>
                                     </includes>
                                     <systemPropertyVariables>
-                                        <test.target.route>${test.target.route}</test.target.route>
+                                        <test.target.route>${docker.test.target.route}</test.target.route>
                                     </systemPropertyVariables>
-                                    <dependenciesToScan>
-                                        <dependency>group.msg.at.cloud:cnj-hello-backend-test</dependency>
-                                    </dependenciesToScan>
                                 </configuration>
                             </execution>
                             <execution>
@@ -595,11 +644,8 @@
                                         <include>**/*SystemTest.java</include>
                                     </includes>
                                     <systemPropertyVariables>
-                                        <test.target.route>${test.target.route}</test.target.route>
+                                        <test.target.route>${docker.test.target.route}</test.target.route>
                                     </systemPropertyVariables>
-                                    <dependenciesToScan>
-                                        <dependency>group.msg.at.cloud:cnj-hello-backend-test</dependency>
-                                    </dependenciesToScan>
                                 </configuration>
                             </execution>
                             <execution>
@@ -623,21 +669,10 @@
             <id>integration-test-stage</id>
             <properties>
                 <k8s.cluster.namespace>cloudtrain-int</k8s.cluster.namespace>
-                <test.target.route>${k8s.test.target.route}</test.target.route>
                 <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
-                <maven.install.skip>true</maven.install.skip>
             </properties>
             <build>
                 <plugins>
-                    <!-- skip compilation, since we are working with an already built artifact -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <skipMain>true</skipMain>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
                     <!-- skip unit tests, since we are working with an already built artifact -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -727,11 +762,8 @@
                                         <include>**/*SystemTest.java</include>
                                     </includes>
                                     <systemPropertyVariables>
-                                        <test.target.route>${test.target.route}</test.target.route>
+                                        <test.target.route>${k8s.test.target.route}</test.target.route>
                                     </systemPropertyVariables>
-                                    <dependenciesToScan>
-                                        <dependency>group.msg.at.cloud:cnj-hello-backend-test</dependency>
-                                    </dependenciesToScan>
                                 </configuration>
                             </execution>
                             <execution>

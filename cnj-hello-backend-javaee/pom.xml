@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>group.msg.at.cloud</groupId>
     <artifactId>cnj-hello-backend-javaee</artifactId>
-    <version>${revision}${sha1}${changelist}</version>
+    <version>${revision}${changelist}${sha1}</version>
     <packaging>war</packaging>
     <description>Simple cloud native Java backend based on Java EE Full Profile</description>
     <properties>
@@ -14,13 +14,12 @@
         <javaee.version>8.0.1</javaee.version>
         <payara.version>5.201</payara.version>
         <microprofile.version>3.2</microprofile.version>
-        <postgres.jdbc.version>42.2.10</postgres.jdbc.version>
         <!-- common logging dependencies -->
         <slf4j.version>1.7.30</slf4j.version>
-        <log4j.slf4j.version>2.13.0</log4j.slf4j.version>
         <!-- common test dependencies -->
         <junit.version>5.6.0</junit.version>
-        <backend.test.version>3.0.0</backend.test.version>
+        <restassured.version>3.3.0</restassured.version>
+        <cnj.common.test.version>2.0.0</cnj.common.test.version>
         <!-- docker related properties -->
         <docker.registry.name>docker.at41tools.k8s.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
@@ -28,10 +27,11 @@
         <docker.removeMode>all</docker.removeMode>
         <docker.cleanup>try</docker.cleanup>
         <docker.verbose>true</docker.verbose>
+        <docker.test.target.route>http://localhost:38080</docker.test.target.route>
         <!-- kubernetes related properties -->
         <k8s.cluster.route>https://apps.at41tools.k8s.aws.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
-        <k8s.ingress.host></k8s.ingress.host>
+        <k8s.ingress.host>apps.at41tools.k8s.aws.msgoat.eu</k8s.ingress.host>
         <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
         <k8s.test.target.route>${k8s.cluster.route}${k8s.ingress.path}</k8s.test.target.route>
         <!-- pinning versions of common maven plugins -->
@@ -49,13 +49,13 @@
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
         <!-- pinning versions of application type specific maven plugins -->
-        <maven.war.plugin.version>3.2.2</maven.war.plugin.version>
+        <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
         <maven.helm.plugin.version>2.0.1</maven.helm.plugin.version>
         <!-- new Maven version management -->
-        <revision>3.1.0</revision>
+        <revision>4.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -83,22 +83,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- Miscellaneous 3rd party stuff -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.8.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j.slf4j.version}</version>
-            </dependency>
             <!-- JUnit 5.x -->
             <dependency>
                 <groupId>org.junit</groupId>
@@ -122,6 +106,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <!-- showcase specific section -->
         <!-- =========================== -->
@@ -133,14 +123,30 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>group.msg.at.cloud</groupId>
-            <artifactId>cnj-hello-backend-test</artifactId>
-            <version>${backend.test.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>group.msg.at.cloud.common</groupId>
+            <artifactId>cnj-common-test</artifactId>
+            <version>${cnj.common.test.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -290,9 +296,6 @@
         <!-- builds application; runs unit tests on application; builds docker image; runs system tests on docker container -->
         <profile>
             <id>pre-commit-stage</id>
-            <properties>
-                <test.target.route>http://localhost:38080</test.target.route>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -416,15 +419,13 @@
                                 </goals>
                                 <phase>integration-test</phase>
                                 <configuration>
+                                    <failIfNoTests>true</failIfNoTests>
                                     <includes>
                                         <include>**/*SystemTest.java</include>
                                     </includes>
                                     <systemPropertyVariables>
-                                        <test.target.route>${test.target.route}</test.target.route>
+                                        <test.target.route>${docker.test.target.route}</test.target.route>
                                     </systemPropertyVariables>
-                                    <dependenciesToScan>
-                                        <dependency>group.msg.at.cloud:cnj-hello-backend-test</dependency>
-                                    </dependenciesToScan>
                                 </configuration>
                             </execution>
                             <execution>
@@ -595,11 +596,8 @@
                                         <include>**/*SystemTest.java</include>
                                     </includes>
                                     <systemPropertyVariables>
-                                        <test.target.route>${test.target.route}</test.target.route>
+                                        <test.target.route>${docker.test.target.route}</test.target.route>
                                     </systemPropertyVariables>
-                                    <dependenciesToScan>
-                                        <dependency>group.msg.at.cloud:cnj-hello-backend-test</dependency>
-                                    </dependenciesToScan>
                                 </configuration>
                             </execution>
                             <execution>
@@ -622,21 +620,11 @@
         <profile>
             <id>integration-test-stage</id>
             <properties>
-                <k8s.cluster.namespace>cloudtrain-int</k8s.cluster.namespace>
-                <test.target.route>${k8s.test.target.route}</test.target.route>
                 <maven.install.skip>true</maven.install.skip>
+                <k8s.cluster.namespace>cloudtrain-int</k8s.cluster.namespace>
             </properties>
             <build>
                 <plugins>
-                    <!-- skip compilation, since we are working with an already built artifact -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <skipMain>true</skipMain>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
                     <!-- skip unit tests, since we are working with an already built artifact -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -726,11 +714,8 @@
                                         <include>**/*SystemTest.java</include>
                                     </includes>
                                     <systemPropertyVariables>
-                                        <test.target.route>${test.target.route}</test.target.route>
+                                        <test.target.route>${k8s.test.target.route}</test.target.route>
                                     </systemPropertyVariables>
-                                    <dependenciesToScan>
-                                        <dependency>group.msg.at.cloud:cnj-hello-backend-test</dependency>
-                                    </dependenciesToScan>
                                 </configuration>
                             </execution>
                             <execution>
