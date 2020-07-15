@@ -1,0 +1,5 @@
+apiVersion: v2
+appVersion: "${project.version}"
+description: "${project.description}"
+name: cnj-hello-backend-quarkus
+version: 1.0.0

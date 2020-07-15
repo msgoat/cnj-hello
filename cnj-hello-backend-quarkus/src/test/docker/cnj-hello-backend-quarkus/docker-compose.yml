@@ -1,0 +1,14 @@
+# docker-compose.yml
+# ----------------------------------------------------------------------------
+# Composes Docker containers and volumes to a runnable Java EE application
+# ----------------------------------------------------------------------------
+#
+---
+version: '3'
+
+services:
+
+  backend:
+    image: ${docker.image.name}:${project.version}
+    ports:
+      - "38080:8080"

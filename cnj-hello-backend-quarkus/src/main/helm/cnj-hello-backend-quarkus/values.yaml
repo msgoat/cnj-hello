@@ -1,0 +1,38 @@
+# Default values for cnj-hello-backend-quarkus.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ${docker.image.name}
+  tag: ${project.version}
+  pullPolicy: IfNotPresent
+
+probes:
+  readiness:
+    path: /api/v1/probes/readiness
+  liveness:
+    path: /api/v1/probes/liveness
+
+nameOverride: ""
+fullnameOverride: ""
+partOfOverride: "cnj-openapi"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    traefik.frontend.rule.type: PathPrefixStrip
+  host: "${k8s.ingress.host}"
+  paths: ["${k8s.ingress.path}"]
+
+resources:
+  limits:
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 756Mi
