@@ -788,6 +788,7 @@
                                     </includes>
                                     <systemPropertyVariables>
                                         <test.target.route>${k8s.test.target.route}</test.target.route>
+                                        <test.target.readinessProbe.initialDelaySeconds>0</test.target.readinessProbe.initialDelaySeconds>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>
