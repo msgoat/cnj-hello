@@ -12,7 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- runtime related properties -->
         <java.version>11</java.version>
-        <spring.boot.version>2.3.1.RELEASE</spring.boot.version>
+        <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
         <!-- common logging dependencies -->
         <slf4j.version>1.7.30</slf4j.version>
         <logstash.logback.encoder.version>6.1</logstash.logback.encoder.version>
@@ -53,9 +53,9 @@
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
-        <maven.helm.plugin.version>2.0.1</maven.helm.plugin.version>
+        <maven.helm.plugin.version>2.1.0</maven.helm.plugin.version>
         <!-- new Maven version management -->
-        <revision>4.0.0</revision>
+        <revision>4.1.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
