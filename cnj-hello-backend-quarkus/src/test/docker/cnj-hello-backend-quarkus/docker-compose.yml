@@ -12,3 +12,6 @@ services:
     image: ${docker.image.name}:${project.version}
     ports:
       - "38080:8080"
+      - "38089:8089"
+    environment:
+      JAVA_OPTS: "-javaagent:/home/quarkus/org.jacoco.agent.jar=output=tcpserver,address=*,port=8089"

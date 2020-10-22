@@ -1,8 +1,14 @@
 #!/bin/sh
 
 if [ "$1" = 'java' ]; then
-	echo "Running Spring Boot application ..."
-	java ${JAVA_OPTS} ${DOCKER_JAVA_OPTS} ${SPRING_JAVA_OPTS} -jar /home/spring/*.jar
+	echo "Running Spring Boot application with options:"
+	echo "JAVA_APPLICATION=${JAVA_APPLICATION}"
+	echo "JAVA_APPLICATION_HOME=${JAVA_APPLICATION_HOME}"
+	echo "JAVA_OPTS=${JAVA_OPTS}"
+	echo "DOCKER_JAVA_OPTS=${DOCKER_JAVA_OPTS}"
+	echo "SPRING_JAVA_OPTS=${SPRING_JAVA_OPTS}"
+	echo "SPRING_ARGUMENTS=${SPRING_ARGUMENTS}"
+	java ${JAVA_OPTS} ${DOCKER_JAVA_OPTS} ${SPRING_JAVA_OPTS} -jar ${JAVA_APPLICATION_HOME}/${JAVA_APPLICATION} ${SPRING_ARGUMENTS}
 else 
 	exec "$@"	
 fi

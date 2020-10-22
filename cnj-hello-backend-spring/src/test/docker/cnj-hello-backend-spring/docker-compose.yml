@@ -12,12 +12,12 @@ services:
     image: docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-spring:${project.version}
     ports:
       - "38080:8080"
+      - "38089:8089"
     environment:
+      JAVA_OPTS: "-javaagent:/home/spring/org.jacoco.agent.jar=output=tcpserver,address=*,port=8089"
       SPRING_PROFILES_ACTIVE: cloud
-      CNAP_CLOUD: kubernetes
 
 
 
 
 
-  

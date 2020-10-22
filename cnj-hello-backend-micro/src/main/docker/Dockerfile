@@ -5,23 +5,35 @@ LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.version="${project.version}" \
         ${project.groupId}.${project.artifactId}.description="${project.description}"
 
-ENV JAVA_OPTS="" \
+ARG ARG_JAVA_APPLICATION=${project.build.finalName}-microbundle.jar
+ARG ARG_JAVA_APPLICATION_HOME=/home/payara
+
+ENV JAVA_APPLICATION=${ARG_JAVA_APPLICATION} \
+    JAVA_APPLICATION_HOME=${ARG_JAVA_APPLICATION_HOME} \
+    JAVA_OPTS="" \
     DOCKER_JAVA_OPTS="" \
-    PAYARA_JAVA_OPTS="-Djava.util.logging.ConsoleHandler.formatter=fish.payara.enterprise.server.logging.JSONLogFormatter" \
+    PAYARA_JAVA_OPTS="" \
     PAYARA_ARGUMENTS="--disablephonehome --enablehealthcheck true --nocluster --nohostaware"
 
+EXPOSE 8080
+
+# create non-root user to run application
 RUN echo "adding run user payara to system" \
     && addgroup -S payara -g 1000 \
     && adduser -S payara -u 1000 -G payara
 
-# copy build artifact into payara deployment folder
-COPY *.jar /home/payara/
-COPY docker-entrypoint.sh /home/payara/
+# copy entrypoint script
+COPY docker-entrypoint.sh /
 
-RUN chown -R payara:payara /home/payara \
-    && chmod u+x /home/payara/docker-entrypoint.sh
+# copy all build artifacts into application home folder
+COPY *.jar ${ARG_JAVA_APPLICATION_HOME}/
+
+# allow non-root user to access and execute all copied files
+RUN chown payara:payara /docker-entrypoint.sh \
+    && chmod u+x /docker-entrypoint.sh \
+    && chown -R payara:payara ${ARG_JAVA_APPLICATION_HOME}
 
 USER payara
 
-ENTRYPOINT ["/home/payara/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["start"]

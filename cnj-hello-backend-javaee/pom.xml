@@ -54,8 +54,12 @@
         <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
         <maven.helm.plugin.version>2.1.0</maven.helm.plugin.version>
+        <!-- quality assurance properties -->
+        <sonar.host.url>https://sonarqube.at41tools.k8s.aws.msgoat.eu</sonar.host.url>
+        <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
+        <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
         <!-- new Maven version management -->
-        <revision>4.1.0</revision>
+        <revision>4.2.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -213,6 +217,17 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
                     <version>${maven.flatten.plugin.version}</version>
+                </plugin>
+                <!-- quality assurance plugins -->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${maven.jacoco.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${maven.sonar.plugin.version}</version>
                 </plugin>
                 <!-- application type specific maven plugins section -->
                 <plugin>
@@ -609,6 +624,60 @@
                                 <configuration>
                                     <failIfNoTests>true</failIfNoTests>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- quality assurance plugins -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-jacoco-agent</id>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.jacoco</groupId>
+                                            <artifactId>org.jacoco.agent</artifactId>
+                                            <version>${maven.jacoco.plugin.version}</version>                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>analyze-code</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

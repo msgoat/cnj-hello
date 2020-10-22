@@ -2,8 +2,14 @@
 
 if [ "$1" = "start" ]
 then
-	echo "Running Quarkus application ..."
-	java ${JAVA_OPTS} ${DOCKER_JAVA_OPTS} ${QUARKUS_JAVA_OPTS} -jar /home/quarkus/*.jar ${QUARKUS_ARGUMENTS}
+	echo "Running Quarkus application with options:"
+	echo "JAVA_APPLICATION=${JAVA_APPLICATION}"
+	echo "JAVA_APPLICATION_HOME=${JAVA_APPLICATION_HOME}"
+	echo "JAVA_OPTS=${JAVA_OPTS}"
+	echo "DOCKER_JAVA_OPTS=${DOCKER_JAVA_OPTS}"
+	echo "QUARKUS_JAVA_OPTS=${QUARKUS_JAVA_OPTS}"
+	echo "QUARKUS_ARGUMENTS=${QUARKUS_ARGUMENTS}"
+	java ${JAVA_OPTS} ${DOCKER_JAVA_OPTS} ${QUARKUS_JAVA_OPTS} -jar ${JAVA_APPLICATION_HOME}/${JAVA_APPLICATION} ${QUARKUS_ARGUMENTS}
 else 
 	exec "$@"	
 fi
