@@ -1,26 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>group.msg.at.cloud</groupId>
-    <artifactId>cnj-hello-backend-spring</artifactId>
+    <artifactId>cnj-hello-backend-jakartaee</artifactId>
     <version>${revision}${changelist}${sha1}</version>
-    <packaging>jar</packaging>
-    <description>Simplest possible cloud native java backend based on Spring Boot</description>
+    <packaging>war</packaging>
+    <description>Simple cloud native Java backend based on Jakarta EE Full Profile</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- runtime related properties -->
         <java.version>11</java.version>
-        <spring.boot.version>2.4.4</spring.boot.version>
+        <jakartaee.version>9.0.0</jakartaee.version>
+        <payara.version>5.2021.2</payara.version>
+        <microprofile.version>3.3</microprofile.version>
         <!-- common logging dependencies -->
         <slf4j.version>1.7.30</slf4j.version>
-        <logstash.logback.encoder.version>6.1</logstash.logback.encoder.version>
         <!-- common test dependencies -->
         <junit.version>5.6.0</junit.version>
         <restassured.version>3.3.0</restassured.version>
         <cnj.common.test.version>2.0.0</cnj.common.test.version>
-         <!-- docker related properties -->
+        <!-- docker related properties -->
         <docker.registry.name>docker.cloudtrain.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
@@ -31,7 +31,7 @@
         <!-- kubernetes related properties -->
         <k8s.cluster.route>https://apps.cloudtrain.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
-        <k8s.ingress.host></k8s.ingress.host>
+        <k8s.ingress.host>apps.cloudtrain.aws.msgoat.eu</k8s.ingress.host>
         <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
         <k8s.test.target.route>${k8s.cluster.route}${k8s.ingress.path}</k8s.test.target.route>
         <!-- pinning versions of common maven plugins -->
@@ -49,17 +49,15 @@
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
         <!-- pinning versions of application type specific maven plugins -->
-        <maven.spring.boot.plugin.version>${spring.boot.version}</maven.spring.boot.plugin.version>
+        <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
         <!-- pinning versions of cloud native specific maven plugins -->
         <maven.compose.plugin.version>2.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
         <maven.helm.plugin.version>3.0.0</maven.helm.plugin.version>
         <!-- quality assurance properties -->
-        <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
         <sonar.host.url>https://sonarqube.at41tools.k8s.aws.msgoat.eu</sonar.host.url>
+        <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
         <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
-        <jacoco.address>localhost</jacoco.address>
-        <jacoco.port>38089</jacoco.port>
         <!-- new Maven version management -->
         <revision>5.0.0</revision>
         <sha1></sha1>
@@ -67,11 +65,24 @@
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot runtime -->
+            <!-- JakartaEE 9 runtime dependencies -->
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>${jakartaee.version}</version>
+            </dependency>
+            <!-- Payara runtime dependencies -->
+            <dependency>
+                <groupId>fish.payara.extras</groupId>
+                <artifactId>payara-embedded-all</artifactId>
+                <version>${payara.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- Eclipse MicroProfile runtime dependencies -->
+            <dependency>
+                <groupId>org.eclipse.microprofile</groupId>
+                <artifactId>microprofile</artifactId>
+                <version>${microprofile.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -91,29 +102,48 @@
         <!-- =========================== -->
         <!-- common dependencies section -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <!-- showcase specific section -->
         <!-- =========================== -->
         <!-- test time dependencies      -->
         <!-- =========================== -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-embedded-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -169,27 +199,8 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven.jar.plugin.version}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <mainClass>${start-class}</mainClass>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven.resources.plugin.version}</version>
-                    <configuration>
-                        <delimiters>
-                            <delimiter>${resource.delimiter}</delimiter>
-                        </delimiters>
-                        <useDefaultDelimiters>false</useDefaultDelimiters>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -219,19 +230,11 @@
                 </plugin>
                 <!-- application type specific maven plugins section -->
                 <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${maven.spring.boot.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>repackage</id>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven.war.plugin.version}</version>
                     <configuration>
-                        <mainClass>${start-class}</mainClass>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
                 <!-- cloud native specific maven plugins section -->
@@ -302,53 +305,6 @@
         </plugins>
     </build>
     <profiles>
-        <!-- profile local-stage -->
-        <!-- supposed to be run during local development -->
-        <!-- builds application and runs it -->
-        <profile>
-            <id>local-stage</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/*SystemTest.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>repackage</id>
-                                <goals>
-                                    <goal>repackage</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>run-spring-application</id>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <phase>pre-integration-test</phase>
-                                <configuration>
-                                    <profiles>
-                                        <profile>test</profile>
-                                    </profiles>
-                                    <systemPropertyVariables>
-                                        <cloudtrain.services.downstream.url>http://localhost:38090</cloudtrain.services.downstream.url>
-                                    </systemPropertyVariables>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <!-- profile pre-commit-stage representing pre-commit-stage of local build -->
         <!-- supposed to be run before each push to the central GIT repository -->
         <!-- builds application; runs unit tests on application; builds docker image; runs system tests on docker container -->
@@ -364,10 +320,6 @@
                                 <exclude>**/*SystemTest.java</exclude>
                             </excludes>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -388,7 +340,7 @@
                                         <resource>
                                             <directory>${project.build.directory}</directory>
                                             <includes>
-                                                <include>*.jar</include>
+                                                <include>*.war</include>
                                             </includes>
                                         </resource>
                                     </resources>
@@ -502,33 +454,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- quality assurance plugins -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-jacoco-agent-to-docker-resources</id>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.jacoco</groupId>
-                                            <artifactId>org.jacoco.agent</artifactId>
-                                            <version>${maven.jacoco.plugin.version}</version>
-                                            <classifier>runtime</classifier>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <stripClassifier>true</stripClassifier>
-                                    <stripVersion>true</stripVersion>
-                                    <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -546,10 +471,6 @@
                                 <exclude>**/*SystemTest.java</exclude>
                             </excludes>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -570,7 +491,7 @@
                                         <resource>
                                             <directory>${project.build.directory}</directory>
                                             <includes>
-                                                <include>*.jar</include>
+                                                <include>*.war</include>
                                             </includes>
                                         </resource>
                                     </resources>
@@ -610,7 +531,8 @@
                                         <image>
                                             <name>${docker.image.name}</name>
                                             <build>
-                                                <dockerFileDir>${project.build.directory}/docker-resources</dockerFileDir>
+                                                <dockerFileDir>${project.build.directory}/docker-resources
+                                                </dockerFileDir>
                                                 <tags>
                                                     <tag>${project.version}</tag>
                                                 </tags>
@@ -710,7 +632,7 @@
                         <artifactId>maven-dependency-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>copy-jacoco-agent-to-docker-resources</id>
+                                <id>copy-jacoco-agent</id>
                                 <goals>
                                     <goal>copy</goal>
                                 </goals>
@@ -720,12 +642,8 @@
                                         <artifactItem>
                                             <groupId>org.jacoco</groupId>
                                             <artifactId>org.jacoco.agent</artifactId>
-                                            <version>${maven.jacoco.plugin.version}</version>
-                                            <classifier>runtime</classifier>
-                                        </artifactItem>
+                                            <version>${maven.jacoco.plugin.version}</version>                                        </artifactItem>
                                     </artifactItems>
-                                    <stripClassifier>true</stripClassifier>
-                                    <stripVersion>true</stripVersion>
                                     <outputDirectory>${project.build.directory}/docker-resources</outputDirectory>
                                 </configuration>
                             </execution>
@@ -736,30 +654,16 @@
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>prepare-agent-for-unit-tests</id>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>prepare-agent-for-system-tests</id>
-                                <goals>
-                                    <goal>prepare-agent-integration</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>pull-jacoco-data-from-container</id>
-                                <goals>
-                                    <goal>dump</goal>
-                                </goals>
-                                <phase>integration-test</phase>
-                            </execution>
-                            <execution>
-                                <id>generate-report</id>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
-                                <phase>verify</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -784,8 +688,8 @@
         <profile>
             <id>integration-test-stage</id>
             <properties>
+                <maven.install.skip>true</maven.install.skip>
                 <k8s.cluster.namespace>cloudtrain-int</k8s.cluster.namespace>
-                <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
             </properties>
             <build>
                 <plugins>
@@ -797,12 +701,12 @@
                             <skip>true</skip>
                         </configuration>
                     </plugin>
-                    <!-- skip JAR packaging, since we are working with an already built artifact -->
+                    <!-- skip WAR packaging, since we are working with an already built artifact -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
+                        <artifactId>maven-war-plugin</artifactId>
                         <configuration>
-                            <skipIfEmpty>true</skipIfEmpty>
+                            <skip>true</skip>
                         </configuration>
                     </plugin>
                     <!-- copy resources for helm deployment applying filtering -->

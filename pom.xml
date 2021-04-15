@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>group.msg.at.cloud</groupId>
     <artifactId>cnj-hello</artifactId>
-    <version>4.0.0</version>
+    <version>5.0.0</version>
     <packaging>pom</packaging>
     <description>Simple cloud native Java application</description>
     <properties>
@@ -25,7 +25,7 @@
         <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
     </properties>
     <modules>
-        <module>cnj-hello-backend-javaee</module>
+        <module>cnj-hello-backend-jakartaee</module>
         <module>cnj-hello-backend-micro</module>
         <module>cnj-hello-backend-spring</module>
         <module>cnj-hello-backend-quarkus</module>
@@ -59,9 +59,9 @@
     </build>
     <distributionManagement>
         <repository>
-            <id>at41-maven-repository</id>
-            <name>msg Automotive AT Maven Releases Repository</name>
-            <url>https://nexus.at41tools.k8s.aws.msgoat.eu/repository/maven-releases/</url>
+            <id>cloudtrain-maven-repository</id>
+            <name>msg Automotive CloudTrain Releases Repository</name>
+            <url>https://nexus.cloudtrain.aws.msgoat.eu/repository/cloudtrain-releases/</url>
         </repository>
     </distributionManagement>
 </project>

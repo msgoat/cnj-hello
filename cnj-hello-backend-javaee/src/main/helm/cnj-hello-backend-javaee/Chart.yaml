@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "${project.version}"
-description: "${project.description}"
-name: cnj-hello-backend-javaee
-version: 3.0.0

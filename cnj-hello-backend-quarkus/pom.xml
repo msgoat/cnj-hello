@@ -12,9 +12,9 @@
         <!-- runtime related properties -->
         <java.version>11</java.version>
         <javaee.version>8.0.1</javaee.version>
-        <quarkus.version>1.8.1.Final</quarkus.version>
+        <quarkus.version>1.13.2.Final</quarkus.version>
+        <quarkus.package.type>uber-jar</quarkus.package.type>
         <microprofile.version>3.3</microprofile.version>
-        <postgres.jdbc.version>42.2.10</postgres.jdbc.version>
         <!-- common logging dependencies -->
         <slf4j.version>1.7.30</slf4j.version>
         <!-- common rest dependencies -->
@@ -24,7 +24,7 @@
         <restassured.version>3.3.0</restassured.version>
         <cnj.common.test.version>2.0.0</cnj.common.test.version>
         <!-- docker related properties -->
-        <docker.registry.name>docker.at41tools.k8s.aws.msgoat.eu</docker.registry.name>
+        <docker.registry.name>docker.cloudtrain.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
         <docker.image.name>${docker.registry.name}/${docker.organization.name}/${project.artifactId}</docker.image.name>
         <docker.removeMode>all</docker.removeMode>
@@ -32,7 +32,7 @@
         <docker.verbose>true</docker.verbose>
         <docker.test.target.route>http://localhost:38080</docker.test.target.route>
         <!-- kubernetes related properties -->
-        <k8s.cluster.route>https://apps.at41tools.k8s.aws.msgoat.eu</k8s.cluster.route>
+        <k8s.cluster.route>https://apps.cloudtrain.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
         <k8s.ingress.host></k8s.ingress.host>
         <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
@@ -55,9 +55,9 @@
         <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
         <maven.quarkus.plugin.version>${quarkus.version}</maven.quarkus.plugin.version>
         <!-- pinning versions of cloud native specific maven plugins -->
-        <maven.compose.plugin.version>1.0.0</maven.compose.plugin.version>
+        <maven.compose.plugin.version>2.0.0</maven.compose.plugin.version>
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
-        <maven.helm.plugin.version>2.1.0</maven.helm.plugin.version>
+        <maven.helm.plugin.version>3.0.0</maven.helm.plugin.version>
         <!-- quality assurance properties -->
         <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
         <sonar.host.url>https://sonarqube.at41tools.k8s.aws.msgoat.eu</sonar.host.url>
@@ -65,7 +65,7 @@
         <jacoco.address>localhost</jacoco.address>
         <jacoco.port>38089</jacoco.port>
         <!-- new Maven version management -->
-        <revision>1.2.0</revision>
+        <revision>5.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>
@@ -81,7 +81,7 @@
             <!-- Quarkus build time and runtime dependencies -->
             <dependency>
                 <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-bom</artifactId>
+                <artifactId>quarkus-universe-bom</artifactId>
                 <version>${quarkus.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
@@ -387,7 +387,6 @@
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
-                                <!-- <phase>package</phase> -->
                             </execution>
                         </executions>
                     </plugin>

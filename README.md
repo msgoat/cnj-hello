@@ -1,14 +1,12 @@
 # cnj-hello
 
-Showcase of a "Hello-World" style cloud native Java using Spring Boot, Java EE, Eclipse MicroProfile and Quarkus 
+Showcase of a "Hello-World" style cloud native Java using Spring Boot, Jakarta EE, Eclipse MicroProfile and Quarkus 
 as Java backend technologies:
 
-* Java EE (see: [cnj-hello-backend-javaee](cnj-hello-backend-javaee/README.md))
+* Jakarta EE (see: [cnj-hello-backend-jakartaee](cnj-hello-backend-jakartaee/README.md))
 * Eclipse MicroProfile (see: [cnj-hello-backend-micro](cnj-hello-backend-micro/README.md))
 * Spring Boot (see: [cnj-hello-backend-spring](cnj-hello-backend-spring/README.md))
 * Quarkus (see: [cnj-hello-backend-quarkus](cnj-hello-backend-quarkus/README.md))
-
-All applications are using a common downstream service [cnj-hello-downstream-spring](cnj-hello-downstream-spring/README.md)
 
 ## Status
 ![Build status](https://drone.at.automotive.msg.team/api/badges/msgoat/cnj-hello/status.svg)

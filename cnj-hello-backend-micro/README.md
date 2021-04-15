@@ -3,12 +3,12 @@
 Simplest possible cloud native java application based on Eclipse Micro Profile.
 
 ## Docker Pull Command
-`docker pull docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-micro`
+`docker pull docker.cloudtrain.aws.msgoat.eu/cloudtrain/cnj-hello-backend-micro`
 
 ## Run this application 
 
 ``` 
-docker run --name cnj-hello-backend-micro -p 8080:8080 docker.at41tools.k8s.aws.msgoat.eu/cloudtrain/cnj-hello-backend-micro
+docker run --name cnj-hello-backend-micro -p 8080:8080 docker.cloudtrain.aws.msgoat.eu/cloudtrain/cnj-hello-backend-micro
 ```
 
 ## Build this application 
