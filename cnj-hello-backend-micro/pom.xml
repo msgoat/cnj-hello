@@ -935,9 +935,9 @@
     </profiles>
     <distributionManagement>
         <repository>
-            <id>at41-maven-repository</id>
-            <name>msg Automotive AT Maven Releases Repository</name>
-            <url>https://nexus.at41tools.k8s.aws.msgoat.eu/repository/maven-releases/</url>
+            <id>cloudtrain-maven-repository</id>
+            <name>msg Automotive CloudTrain Releases Repository</name>
+            <url>https://nexus.cloudtrain.aws.msgoat.eu/repository/cloudtrain-releases/</url>
         </repository>
     </distributionManagement>
 </project>
