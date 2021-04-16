@@ -3,53 +3,59 @@ kind: Deployment
 metadata:
   name: {{ include "cnj-hello-backend-jakartaee.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "cnj-hello-backend-jakartaee.name" . }}
-    helm.sh/chart: {{ include "cnj-hello-backend-jakartaee.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "cnj-hello-backend-jakartaee.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.pod.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "cnj-hello-backend-jakartaee.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "cnj-hello-backend-jakartaee.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app.kubernetes.io/name: {{ include "cnj-hello-backend-jakartaee.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "cnj-hello-backend-jakartaee.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.pod.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cnj-hello-backend-jakartaee.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.pod.securityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.container.main.securityContext | nindent 12 }}
+          image: "{{ .Values.container.main.image.repository }}:{{ .Values.container.main.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.container.main.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.container.main.ports.http.number }}
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: {{ .Values.probes.liveness.path }}
+              path: {{ .Values.container.main.probes.liveness.path }}
               port: http
           readinessProbe:
             httpGet:
-              path: {{ .Values.probes.readiness.path }}
+              path: {{ .Values.container.main.probes.readiness.path }}
               port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-{{- if .Values.image.pullSecret }}
-      imagePullSecrets:
-        - name: {{ .Values.image.pullSecret }}
-{{- end }}
-{{- with .Values.nodeSelector }}
+            {{- toYaml .Values.container.main.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}

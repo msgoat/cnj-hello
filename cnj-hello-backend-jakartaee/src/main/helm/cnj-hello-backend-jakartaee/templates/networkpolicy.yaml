@@ -3,15 +3,11 @@ kind: NetworkPolicy
 metadata:
   name: {{ include "cnj-hello-backend-jakartaee.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "cnj-hello-backend-jakartaee.name" . }}
-    helm.sh/chart: {{ include "cnj-hello-backend-jakartaee.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- include "cnj-hello-backend-jakartaee.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "cnj-hello-backend-jakartaee.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "cnj-hello-backend-jakartaee.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
   ingress:

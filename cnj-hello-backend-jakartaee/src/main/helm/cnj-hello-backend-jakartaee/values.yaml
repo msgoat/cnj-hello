@@ -1,22 +1,50 @@
 # Default values for cnj-hello-backend-jakartaee.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-image:
-  repository: ${docker.image.name}
-  tag: ${project.version}
-  pullPolicy: IfNotPresent
-
-probes:
-  readiness:
-    path: /api/v1/probes/readiness
-  liveness:
-    path: /api/v1/probes/liveness
-
 nameOverride: ""
 fullnameOverride: ""
+
+pod:
+  replicaCount: 1
+  imagePullSecrets: []
+  securityContext: {}
+    # fsGroup: 2000
+  annotations: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+container:
+  main:
+    image:
+      repository: ${docker.image.name}
+      tag: ${project.version}
+      pullPolicy: IfNotPresent
+    ports:
+      http:
+        number: 8080
+    probes:
+      readiness:
+        path: /api/v1/probes/readiness
+      liveness:
+        path: /api/v1/probes/liveness
+    resources:
+      limits:
+        # since JVMs tend to spike during startup we don't provide a cpu limit
+        # cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 756Mi
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 1234
+      privileged: false
+      allowPrivilegeEscalation: false
 
 service:
   type: ClusterIP
@@ -24,25 +52,32 @@ service:
 
 ingress:
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.pathmatcher: PathPrefix
-    traefik.http.middlewares.cnj-hello.stripprefix.prefixes: ${k8s.ingress.path}
-  rules:
-    - host: "${k8s.ingress.host}"
-      paths: ["${k8s.ingress.path}"]
+  type: traefik
+  host: "${k8s.ingress.host}"
+  path: "${k8s.ingress.path}"
+  annotations: {}
   tls: []
 
-resources:
-  limits:
-    #   cpu: 100m
-    memory: 1Gi
-  requests:
-    cpu: 250m
-    memory: 756Mi
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 
-tolerations: []
-
-affinity: {}
+# In managed Kubernetes clusters you should always apply pod disruption budgets
+# to your applications. When applying them, you have to keep in mind that you have to run your
+# application with more than one replica at any time!
+podDisruptionBudget:
+  enabled: true
+  minUnavailable: 1
+  # minAvailable: 1
