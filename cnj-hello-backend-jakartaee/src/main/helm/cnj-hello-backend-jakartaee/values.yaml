@@ -8,7 +8,6 @@ image:
   repository: ${docker.image.name}
   tag: ${project.version}
   pullPolicy: IfNotPresent
-#  pullSecret: fwp-pull-secret
 
 probes:
   readiness:
@@ -28,7 +27,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.pathmatcher: PathPrefix
-    traefik.http.middlewares.example.stripprefix.prefixes: /${k8s.ingress.path}
+    traefik.http.middlewares.cnj-hello-backend-jarkataee.stripprefix.prefixes: ${k8s.ingress.path}
   rules:
     - host: "${k8s.ingress.host}"
       paths: ["${k8s.ingress.path}"]
