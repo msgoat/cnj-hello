@@ -748,7 +748,7 @@
                                     <releaseName>${project.artifactId}</releaseName>
                                     <namespace>${k8s.cluster.namespace}</namespace>
                                     <debug>true</debug>
-                                    <timeout>90s</timeout>
+                                    <timeout>180s</timeout>
                                 </configuration>
                             </execution>
 <!--
