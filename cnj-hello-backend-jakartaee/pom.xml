@@ -56,9 +56,10 @@
         <maven.helm.plugin.version>3.0.0</maven.helm.plugin.version>
         <!-- quality assurance properties -->
         <sonar.host.url>https://sonarqube.cloudtrain.aws.msgoat.eu</sonar.host.url>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/jacoco*.exec</sonar.coverage.jacoco.xmlReportPaths>
         <maven.sonar.plugin.version> 3.8.0.2131</maven.sonar.plugin.version>
         <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
+        <jacoco.address>localhost</jacoco.address>
+        <jacoco.port>38089</jacoco.port>
         <!-- new Maven version management -->
         <revision>5.0.0</revision>
         <sha1></sha1>
