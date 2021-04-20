@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "cnj-hello-backend-quarkus.selectorLabels" . | nindent 6 }}
+    {{- include "cnj-hello-backend-quarkus.selectorLabels" . | nindent 4 }}

@@ -6,13 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [5.0.0] - 2021-04-15
+## [5.0.0] - 2021-04-20
 ### Added
 ### Changed
 - moved to new AWS CloudTrain environment
 - upgraded to latest versions of runtime environments and servers
 - renamed showcase javaee to jakartaee
-- switched from javaee dependencies to jarkartaee dependencies
+- switched from javaee dependencies to jakartaee dependencies
 
 ## [3.0.0] - 2020-02-17
 ### Added

@@ -29,7 +29,8 @@ RUN chown spring:spring /docker-entrypoint.sh \
     && chmod u+x /docker-entrypoint.sh \
     && chown -R spring:spring ${ARG_JAVA_APPLICATION_HOME}
 
-USER spring
+# use user ID instead of user name to allow kubernetes to check non-root users
+USER 1000
 
 EXPOSE 8080
 

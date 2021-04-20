@@ -31,7 +31,8 @@ RUN chown quarkus:quarkus /docker-entrypoint.sh \
     && chmod u+x /docker-entrypoint.sh \
     && chown -R quarkus:quarkus ${ARG_JAVA_APPLICATION_HOME}
 
-USER quarkus
+# use user ID instead of user name to allow kubernetes to check non-root users
+USER 1000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["start"]

@@ -1,0 +1,11 @@
+{{- if .Values.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "cnj-hello-backend-quarkus.fullname" . }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      {{- include "cnj-hello-backend-quarkus.selectorLabels" . | nindent 6 }}
+{{- end }}

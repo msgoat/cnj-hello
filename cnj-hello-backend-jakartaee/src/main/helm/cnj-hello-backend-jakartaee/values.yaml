@@ -59,7 +59,7 @@ ingress:
   tls: []
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 2
   maxReplicas: 4
   targetCPUUtilizationPercentage: 80
@@ -78,6 +78,6 @@ serviceAccount:
 # to your applications. When applying them, you have to keep in mind that you have to run your
 # application with more than one replica at any time!
 podDisruptionBudget:
-  enabled: true
+  enabled: false
   minUnavailable: 1
   # minAvailable: 1

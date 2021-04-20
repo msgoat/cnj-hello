@@ -31,7 +31,7 @@
         <!-- kubernetes related properties -->
         <k8s.cluster.route>https://apps.cloudtrain.aws.msgoat.eu</k8s.cluster.route>
         <k8s.cluster.namespace>default</k8s.cluster.namespace>
-        <k8s.ingress.host></k8s.ingress.host>
+        <k8s.ingress.host>apps.cloudtrain.aws.msgoat.eu</k8s.ingress.host>
         <k8s.ingress.path>/${k8s.cluster.namespace}/${project.artifactId}</k8s.ingress.path>
         <k8s.test.target.route>${k8s.cluster.route}${k8s.ingress.path}</k8s.test.target.route>
         <!-- pinning versions of common maven plugins -->
@@ -55,8 +55,9 @@
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
         <maven.helm.plugin.version>3.0.0</maven.helm.plugin.version>
         <!-- quality assurance properties -->
-        <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
-        <sonar.host.url>https://sonarqube.at41tools.k8s.aws.msgoat.eu</sonar.host.url>
+        <maven.sonar.plugin.version> 3.8.0.2131</maven.sonar.plugin.version>
+        <sonar.host.url>https://sonarqube.cloudtrain.aws.msgoat.eu</sonar.host.url>
+        <!-- <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/jacoco*.exec</sonar.coverage.jacoco.xmlReportPaths> -->
         <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
         <jacoco.address>localhost</jacoco.address>
         <jacoco.port>38089</jacoco.port>

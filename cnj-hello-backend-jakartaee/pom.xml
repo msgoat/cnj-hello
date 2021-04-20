@@ -55,8 +55,9 @@
         <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
         <maven.helm.plugin.version>3.0.0</maven.helm.plugin.version>
         <!-- quality assurance properties -->
-        <sonar.host.url>https://sonarqube.at41tools.k8s.aws.msgoat.eu</sonar.host.url>
-        <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
+        <sonar.host.url>https://sonarqube.cloudtrain.aws.msgoat.eu</sonar.host.url>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/jacoco*.exec</sonar.coverage.jacoco.xmlReportPaths>
+        <maven.sonar.plugin.version> 3.8.0.2131</maven.sonar.plugin.version>
         <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
         <!-- new Maven version management -->
         <revision>5.0.0</revision>
@@ -654,16 +655,30 @@
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>prepare-agent-for-unit-tests</id>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>report</id>
-                                <phase>prepare-package</phase>
+                                <id>prepare-agent-for-system-tests</id>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>pull-jacoco-data-from-container</id>
+                                <goals>
+                                    <goal>dump</goal>
+                                </goals>
+                                <phase>integration-test</phase>
+                            </execution>
+                            <execution>
+                                <id>generate-report</id>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
+                                <phase>verify</phase>
                             </execution>
                         </executions>
                     </plugin>

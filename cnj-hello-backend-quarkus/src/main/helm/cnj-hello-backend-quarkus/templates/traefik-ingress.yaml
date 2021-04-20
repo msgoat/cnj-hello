@@ -1,0 +1,31 @@
+{{- if and .Values.ingress.enabled (eq .Values.ingress.type "traefik") -}}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "cnj-hello-backend-quarkus.fullname" . }}
+  labels:
+    {{- include "cnj-hello-backend-quarkus.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.ingress.host }}`) && PathPrefix(`{{ .Values.ingress.path }}`)
+      middlewares:
+        - name: {{ include "cnj-hello-backend-quarkus.fullname" . }}-stripprefix
+      services:
+        - kind: Service
+          name: {{ include "cnj-hello-backend-quarkus.fullname" . }}
+          port: {{ .Values.service.port }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "cnj-hello-backend-quarkus.fullname" . }}-stripprefix
+  labels:
+  {{- include "cnj-hello-backend-quarkus.labels" . | nindent 4 }}
+spec:
+  stripPrefix:
+    prefixes:
+      - {{ .Values.ingress.path }}
+{{- end }}

@@ -3,15 +3,11 @@ kind: NetworkPolicy
 metadata:
   name: {{ include "cnj-hello-backend-spring.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "cnj-hello-backend-spring.name" . }}
-    helm.sh/chart: {{ include "cnj-hello-backend-spring.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- include "cnj-hello-backend-spring.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "cnj-hello-backend-spring.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "cnj-hello-backend-spring.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
   ingress:

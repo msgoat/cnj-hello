@@ -3,7 +3,7 @@ kind: NetworkPolicy
 metadata:
   name: {{ include "cnj-hello-backend-quarkus.fullname" . }}
   labels:
-    {{- include "cnj-hello-backend-quarkus.labels" . | nindent 4 }}
+  {{- include "cnj-hello-backend-quarkus.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:

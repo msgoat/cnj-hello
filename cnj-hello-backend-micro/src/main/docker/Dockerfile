@@ -33,7 +33,8 @@ RUN chown payara:payara /docker-entrypoint.sh \
     && chmod u+x /docker-entrypoint.sh \
     && chown -R payara:payara ${ARG_JAVA_APPLICATION_HOME}
 
-USER payara
+# use user ID instead of user name to allow kubernetes to check non-root users
+USER 1000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["start"]
