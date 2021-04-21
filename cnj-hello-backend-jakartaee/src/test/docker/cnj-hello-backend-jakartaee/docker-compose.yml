@@ -12,7 +12,4 @@ services:
     image: docker.cloudtrain.aws.msgoat.eu/cloudtrain/cnj-hello-backend-jakartaee:${project.version}
     ports:
       - "38080:8080"
-      - "38089:8089"
-    environment:
-      JAVA_OPTS: "-javaagent:/home/payara/org.jacoco.agent.jar=output=tcpserver,address=*,port=8089"
 
