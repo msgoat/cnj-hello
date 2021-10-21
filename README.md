@@ -9,7 +9,12 @@ as Java backend technologies:
 * Quarkus (see: [cnj-hello-backend-quarkus](cnj-hello-backend-quarkus/README.md))
 
 ## Status
-![Build status](https://drone.at.automotive.msg.team/api/badges/msgoat/cnj-hello/status.svg)
+
+![Build status](https://drone.cloudtrain.aws.msgoat.eu/api/badges/msgoat/cnj-hello/status.svg)
+
+## Release Information
+
+A changelog can be found in [changelog.md](changelog.md).
 
 ## Build this showcase 
 

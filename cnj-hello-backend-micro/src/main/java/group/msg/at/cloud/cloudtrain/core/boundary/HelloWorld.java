@@ -2,7 +2,7 @@ package group.msg.at.cloud.cloudtrain.core.boundary;
 
 import group.msg.at.cloud.cloudtrain.core.entity.Message;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import java.util.UUID;
 
 /**

@@ -1,4 +1,4 @@
-FROM docker.cloudtrain.aws.msgoat.eu/cloudtrain/at41-docker-jre11:3.0.0
+FROM docker.cloudtrain.aws.msgoat.eu/cloudtrain/at41-docker-jre11:4.0.0
 
 LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="CloudTrain" \
@@ -16,9 +16,9 @@ ENV JAVA_APPLICATION=${ARG_JAVA_APPLICATION} \
     QUARKUS_ARGUMENTS=""
 
 # create non-root user to run application
-RUN echo "adding run user quarkus to system" \
-    && addgroup -S quarkus -g 1000 \
-    && adduser -S quarkus -u 1000 -G quarkus
+RUN echo "adding run user quarkus to system" && \
+    addgroup --gid 1000 --system quarkus && \
+    adduser --system --disabled-login --disabled-password --ingroup quarkus --uid 1000 quarkus
 
 # copy entrypoint script
 COPY docker-entrypoint.sh /

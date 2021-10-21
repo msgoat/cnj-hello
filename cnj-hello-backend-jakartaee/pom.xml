@@ -11,15 +11,15 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- runtime related properties -->
         <java.version>11</java.version>
-        <jakartaee.version>9.0.0</jakartaee.version>
-        <payara.version>5.2021.2</payara.version>
-        <microprofile.version>3.3</microprofile.version>
+        <jakartaee.version>9.1.0</jakartaee.version>
+        <payara.version>5.2021.7</payara.version>
+        <microprofile.version>4.1</microprofile.version>
         <!-- common logging dependencies -->
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
         <!-- common test dependencies -->
-        <junit.version>5.6.0</junit.version>
+        <junit.version>5.8.1</junit.version>
         <restassured.version>3.3.0</restassured.version>
-        <cnj.common.test.version>2.0.0</cnj.common.test.version>
+        <cnj.common.test.version>3.0.0</cnj.common.test.version>
         <!-- docker related properties -->
         <docker.registry.name>docker.cloudtrain.aws.msgoat.eu</docker.registry.name>
         <docker.organization.name>cloudtrain</docker.organization.name>
@@ -37,31 +37,31 @@
         <!-- pinning versions of common maven plugins -->
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-        <maven.dependency.plugin.version>3.1.1</maven.dependency.plugin.version>
-        <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
-        <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-        <maven.failsafe.plugin.version>2.22.1</maven.failsafe.plugin.version>
-        <maven.flatten.plugin.version>1.2.1</maven.flatten.plugin.version>
-        <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
+        <maven.dependency.plugin.version>3.2.0</maven.dependency.plugin.version>
+        <maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
+        <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
+        <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
+        <maven.flatten.plugin.version>1.2.7</maven.flatten.plugin.version>
+        <maven.install.plugin.version>3.0.0-M1</maven.install.plugin.version>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
-        <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
-        <maven.site.plugin.version>3.8.2</maven.site.plugin.version>
+        <maven.resources.plugin.version>3.2.0</maven.resources.plugin.version>
+        <maven.site.plugin.version>3.9.1</maven.site.plugin.version>
         <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
-        <maven.surefire.plugin.version>2.22.1</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
         <!-- pinning versions of application type specific maven plugins -->
-        <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
+        <maven.war.plugin.version>3.3.2</maven.war.plugin.version>
         <!-- pinning versions of cloud native specific maven plugins -->
-        <maven.compose.plugin.version>2.0.0</maven.compose.plugin.version>
-        <maven.docker.plugin.version>0.33.0</maven.docker.plugin.version>
-        <maven.helm.plugin.version>3.0.0</maven.helm.plugin.version>
+        <maven.compose.plugin.version>3.0.0</maven.compose.plugin.version>
+        <maven.docker.plugin.version>0.37.0</maven.docker.plugin.version>
+        <maven.helm.plugin.version>4.0.0</maven.helm.plugin.version>
         <!-- quality assurance properties -->
         <sonar.host.url>https://sonarqube.cloudtrain.aws.msgoat.eu</sonar.host.url>
-        <maven.sonar.plugin.version> 3.8.0.2131</maven.sonar.plugin.version>
-        <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
+        <maven.sonar.plugin.version>3.9.0.2155</maven.sonar.plugin.version>
+        <maven.jacoco.plugin.version>0.8.7</maven.jacoco.plugin.version>
         <jacoco.address>localhost</jacoco.address>
         <jacoco.port>38089</jacoco.port>
         <!-- new Maven version management -->
-        <revision>5.0.0</revision>
+        <revision>6.0.0</revision>
         <sha1></sha1>
         <changelist></changelist>
     </properties>

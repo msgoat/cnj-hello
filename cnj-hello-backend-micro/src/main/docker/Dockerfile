@@ -1,4 +1,4 @@
-FROM docker.cloudtrain.aws.msgoat.eu/cloudtrain/at41-docker-jre11:3.0.0
+FROM docker.cloudtrain.aws.msgoat.eu/cloudtrain/at41-docker-jre11:4.0.0
 
 LABEL maintainer="michael.theis@msg.group" \
         ${project.groupId}.${project.artifactId}.project="CloudTrain" \
@@ -18,9 +18,9 @@ ENV JAVA_APPLICATION=${ARG_JAVA_APPLICATION} \
 EXPOSE 8080
 
 # create non-root user to run application
-RUN echo "adding run user payara to system" \
-    && addgroup -S payara -g 1000 \
-    && adduser -S payara -u 1000 -G payara
+RUN echo "adding run user payara to system" && \
+    addgroup --gid 1000 --system payara && \
+    adduser --system --disabled-login --disabled-password --ingroup payara --uid 1000 payara
 
 # copy entrypoint script
 COPY docker-entrypoint.sh /
