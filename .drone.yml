@@ -9,7 +9,7 @@ steps:
     privileged: true
     commands:
       - start-docker.sh
-      - mvn clean install -f cnj-hello-backend-jakartaee/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=${SONARQUBE_TOKEN}
+      - mvn clean install -f cnj-hello-backend-jakartaee/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=$SONARQUBE_TOKEN
     environment:
       - SONARQUBE_TOKEN:
           from_secret: sonarqube-token
@@ -22,7 +22,7 @@ steps:
     privileged: true
     commands:
       - start-docker.sh
-      - mvn clean install -f cnj-hello-backend-micro/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=${SONARQUBE_TOKEN}
+      - mvn clean install -f cnj-hello-backend-micro/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=$SONARQUBE_TOKEN
     environment:
       - SONARQUBE_TOKEN:
           from_secret: sonarqube-token
@@ -37,7 +37,7 @@ steps:
     privileged: true
     commands:
       - start-docker.sh
-      - mvn clean install -f cnj-hello-backend-spring/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=${SONARQUBE_TOKEN}
+      - mvn clean install -f cnj-hello-backend-spring/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=$SONARQUBE_TOKEN
     environment:
       - SONARQUBE_TOKEN:
           from_secret: sonarqube-token
@@ -50,7 +50,7 @@ steps:
     privileged: true
     commands:
       - start-docker.sh
-      - mvn clean install -f cnj-hello-backend-quarkus/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=${SONARQUBE_TOKEN}
+      - mvn clean install -f cnj-hello-backend-quarkus/pom.xml -B -ff -e -V -U -P commit-stage -Dchangelist=.${DRONE_BRANCH} -Dsha1=.${DRONE_COMMIT_SHA:0:8} -Dsonar.login=$SONARQUBE_TOKEN
     environment:
       - SONARQUBE_TOKEN:
           from_secret: sonarqube-token
