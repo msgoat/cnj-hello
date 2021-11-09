@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cnj-hello-backend-micro
+  labels:
+    helm.sh/chart: cnj-hello-backend-micro-4.0.0
+    app.kubernetes.io/name: cnj-hello-backend-micro
+    app.kubernetes.io/instance: cnj-hello-backend-micro
+    app.kubernetes.io/version: "6.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: cnj-hello-backend-micro
+    app.kubernetes.io/instance: cnj-hello-backend-micro

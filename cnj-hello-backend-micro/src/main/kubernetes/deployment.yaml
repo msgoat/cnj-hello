@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cnj-hello-backend-micro
+  labels:
+    helm.sh/chart: cnj-hello-backend-micro-4.0.0
+    app.kubernetes.io/name: cnj-hello-backend-micro
+    app.kubernetes.io/instance: cnj-hello-backend-micro
+    app.kubernetes.io/version: "6.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cnj-hello-backend-micro
+      app.kubernetes.io/instance: cnj-hello-backend-micro
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cnj-hello-backend-micro
+        app.kubernetes.io/instance: cnj-hello-backend-micro
+    spec:
+      serviceAccountName: cnj-hello-backend-micro
+      securityContext:
+        {}
+      containers:
+        - name: cnj-hello-backend-micro
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+          image: "docker.cloudtrain.aws.msgoat.eu/cloudtrain/cnj-hello-backend-micro:6.0.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/v1/probes/liveness
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /api/v1/probes/readiness
+              port: http
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 756Mi

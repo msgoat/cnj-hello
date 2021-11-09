@@ -25,9 +25,9 @@ container:
         number: 8080
     probes:
       readiness:
-        path: /api/v1/probes/readiness
+        path: /q/health/ready
       liveness:
-        path: /api/v1/probes/liveness
+        path: /q/health/live
     resources:
       limits:
         # since JVMs tend to spike during startup we don't provide a cpu limit

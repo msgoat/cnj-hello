@@ -1,0 +1,38 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cnj-hello-backend-micro
+  labels:
+    helm.sh/chart: cnj-hello-backend-micro-4.0.0
+    app.kubernetes.io/name: cnj-hello-backend-micro
+    app.kubernetes.io/instance: cnj-hello-backend-micro
+    app.kubernetes.io/version: "6.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: Host(`apps.cloudtrain.aws.msgoat.eu`) && PathPrefix(`/cloudtrain-int/cnj-hello-backend-micro`)
+      middlewares:
+        - name: cnj-hello-backend-micro-stripprefix
+      services:
+        - kind: Service
+          name: cnj-hello-backend-micro
+          port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cnj-hello-backend-micro-stripprefix
+  labels:
+    helm.sh/chart: cnj-hello-backend-micro-4.0.0
+    app.kubernetes.io/name: cnj-hello-backend-micro
+    app.kubernetes.io/instance: cnj-hello-backend-micro
+    app.kubernetes.io/version: "6.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  stripPrefix:
+    prefixes:
+      - /cloudtrain-int/cnj-hello-backend-micro

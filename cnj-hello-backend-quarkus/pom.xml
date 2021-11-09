@@ -5,14 +5,14 @@
     <artifactId>cnj-hello-backend-quarkus</artifactId>
     <version>${revision}${changelist}${sha1}</version>
     <packaging>jar</packaging>
-    <description>Cloud native Java backend based on Quarkus</description>
+    <description>Simplest possible cloud native Java backend based on Quarkus</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- runtime related properties -->
         <java.version>11</java.version>
         <jakartaee.version>9.1.0</jakartaee.version>
-        <quarkus.version>2.3.1.Final</quarkus.version>
+        <quarkus.version>2.4.1.Final</quarkus.version>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <microprofile.version>4.1</microprofile.version>
         <!-- common logging dependencies -->
@@ -80,8 +80,8 @@
             </dependency>
             <!-- Quarkus build time and runtime dependencies -->
             <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-universe-bom</artifactId>
+                <groupId>io.quarkus.platform</groupId>
+                <artifactId>quarkus-bom</artifactId>
                 <version>${quarkus.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
@@ -111,11 +111,19 @@
         <!-- common dependencies section -->
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-jsonb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -238,17 +246,10 @@
                 </plugin>
                 <!-- application type specific maven plugins section -->
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${maven.war.plugin.version}</version>
-                    <configuration>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-maven-plugin</artifactId>
                     <version>${maven.quarkus.plugin.version}</version>
+                    <extensions>true</extensions>
                 </plugin>
                 <!-- cloud native specific maven plugins section -->
                 <plugin>
@@ -315,6 +316,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>generate-code</goal>
+                            <goal>generate-code-tests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -340,26 +354,6 @@
                             </excludes>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>build-quarkus-application</id>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>run-quarkus-application</id>
-                                <goals>
-                                    <goal>dev</goal>
-                                </goals>
-                                <phase>pre-integration-test</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -378,17 +372,6 @@
                                 <exclude>**/*SystemTest.java</exclude>
                             </excludes>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -556,6 +539,10 @@
         <!-- builds application; runs unit tests on application; builds docker image; runs system tests on docker container; pushes docker image  -->
         <profile>
             <id>commit-stage</id>
+            <properties>
+                <!-- have to skip maven-install-plugin since the quarkus maven plugin does not produce a JAR with the expected name -->
+                <maven.install.skip>true</maven.install.skip>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -566,18 +553,6 @@
                                 <exclude>**/*SystemTest.java</exclude>
                             </excludes>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.quarkus</groupId>
-                        <artifactId>quarkus-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                                <!-- <phase>package</phase> -->
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -823,14 +798,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <!-- skip WAR packaging, since we are working with an already built artifact -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
                         </configuration>

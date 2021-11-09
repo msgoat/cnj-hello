@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cnj-hello-backend-micro
+  labels:
+    helm.sh/chart: cnj-hello-backend-micro-4.0.0
+    app.kubernetes.io/name: cnj-hello-backend-micro
+    app.kubernetes.io/instance: cnj-hello-backend-micro
+    app.kubernetes.io/version: "6.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cnj-hello-backend-micro
+      app.kubernetes.io/instance: cnj-hello-backend-micro
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
