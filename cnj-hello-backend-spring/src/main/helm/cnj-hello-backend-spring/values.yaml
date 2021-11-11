@@ -19,7 +19,7 @@ container:
     image:
       repository: ${docker.image.name}
       tag: ${project.version}
-      pullPolicy: Always # IfNotPresent
+      pullPolicy: IfNotPresent
     ports:
       http:
         number: 8080
@@ -32,10 +32,10 @@ container:
       limits:
         # since JVMs tend to spike during startup we don't provide a cpu limit
         # cpu: 500m
-        memory: 1Gi
+        memory: 2Gi
       requests:
         cpu: 250m
-        memory: 756Mi
+        memory: 2Gi
     securityContext:
       capabilities:
         drop:

@@ -1,17 +1,18 @@
-FROM docker.cloudtrain.aws.msgoat.eu/cloudtrain/at41-docker-jre11:4.0.0
+FROM eclipse-temurin:11-jre
 
-LABEL maintainer="michael.theis@msg.group" \
-        ${project.groupId}.${project.artifactId}.project="CloudTrain" \
-        ${project.groupId}.${project.artifactId}.version="${project.version}" \
-        ${project.groupId}.${project.artifactId}.description="${project.description}"
+LABEL maintainer="michael.theis@msg.group"
+LABEL ${project.groupId}.${project.artifactId}.project="CloudTrain"
+LABEL ${project.groupId}.${project.artifactId}.version="${project.version}"
+LABEL ${project.groupId}.${project.artifactId}.description="${project.description}"
 
 ARG ARG_JAVA_APPLICATION=${project.build.finalName}.jar
 ARG ARG_JAVA_APPLICATION_HOME=/home/spring
 
 ENV JAVA_APPLICATION=${ARG_JAVA_APPLICATION} \
     JAVA_APPLICATION_HOME=${ARG_JAVA_APPLICATION_HOME} \
-    JAVA_OPTS="" \
-    DOCKER_JAVA_OPTS="" \
+    JAVA_OPTS="-XshowSettings:vm -XX:+UseG1GC -XX:MetaspaceSize=256m -XX:+DisableExplicitGC -XX:+UseStringDeduplication -XX:+ParallelRefProcEnabled" \
+    EXT_JAVA_OPTS="" \
+    DOCKER_JAVA_OPTS="-XX:+UseContainerSupport -XX:InitialRAMPercentage=75.0 -XX:MaxRAMPercentage=75.0" \
     SPRING_JAVA_OPTS="" \
     SPRING_ARGUMENTS="" \
     SPRING_PROFILES_ACTIVE="default" \

@@ -14,4 +14,5 @@ services:
       - "38080:8080"
       - "38089:8089"
     environment:
-      JAVA_OPTS: "-javaagent:/home/payara/org.jacoco.agent.jar=output=tcpserver,address=*,port=8089"
+      EXT_JAVA_OPTS: "-javaagent:/home/payara/org.jacoco.agent.jar=output=tcpserver,address=*,port=8089"
+      DOCKER_JAVA_OPTS: "-Xms1G -Xmx1G"
