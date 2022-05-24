@@ -1,5 +1,8 @@
 # cnj-hello
 
+> Deprecated: This repository has been deprecated and may be deleted in the near future. Please refer to the new dedicated repositories
+> cnj-hello-backend-jakartaee, cnj-hello-backend-micro, cnj-hello-backend-quarkus and cnj-hello-backend-spring.
+
 Showcase of a "Hello-World" style cloud native Java using Spring Boot, Jakarta EE, Eclipse MicroProfile and Quarkus 
 as Java backend technologies:
 
